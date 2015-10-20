@@ -4,6 +4,7 @@
 mod token {
 
 	pub struct Token {
+        pub variable: bool,
 		pub priority: i32,
 		pub exec: fn(&mut Vec<&Token>, usize) -> bool
 	}
@@ -13,11 +14,11 @@ mod operators {
 
 	use token::Token;
 
-	pub static Or: Token = Token { priority: 2100, exec: or };
-	pub static True: Token = Token { priority: -1, exec: _true };
-	pub static False: Token = Token { priority: -1, exec: _false };
+	pub static Or: Token = Token { priority: 2100, exec: or, variable: false };
+	pub static True: Token = Token { priority: -1, exec: _true, variable: true  };
+	pub static False: Token = Token { priority: -1, exec: _false, variable: true };
 
-	fn or(expr: &mut Vec<&Token>, pos: usize) -> bool {
+/*	fn or(expr: &mut Vec<&Token>, pos: usize) -> bool {
 		let mut res = false;
 		if (expr[pos - 1].exec)(expr, pos - 1) && (expr[pos + 1].exec)(expr, pos + 1) {
 			res = true;
@@ -27,6 +28,21 @@ mod operators {
 		expr.remove(pos - 1);
 		if res { expr.insert(pos - 2, &True); }
 		else { expr.insert(pos - 2, &False); }
+		res
+	}*/
+
+    fn or(expr: &mut Vec<&Token>, pos: usize) -> bool {
+        println!("i: {}, expr: {}\n", pos, expr.len());
+		let mut res = false;
+		if (expr[pos - 1].exec)(expr, pos - 1) || (expr[pos + 1].exec)(expr, pos + 1) {
+			res = true;
+		}
+		expr.remove(pos + 1);
+		expr.remove(pos);
+		expr.remove(pos - 1);
+        println!("i: {}, expr: {}\n", pos, expr.len());
+		if res { expr.insert(pos - 1, &True); }
+		else { expr.insert(pos - 1, &False); }
 		res
 	}
 
@@ -54,14 +70,21 @@ use token::Token;
 
 // todo a la place de mettre directement true ou false, mettre un token variable qui va se remplacer totu seuk par true ou false quand on l'eval et/ou se register
 
-fn eval(expr: &mut Vec<&Token>) {//todo this
-	
-	let mut i = 0;
-	while i < expr.len() && expr.len() > 1 {
-		(expr[i].exec)(expr, i);
-		i += 1;
-	}
-	println!("{}", (expr[0].exec)(expr, 0));
+fn print_(e: &mut Vec<&Token>) {
+    for t in e {
+        println!("var: {}", t.variable);
+    }
+}
+
+fn eval(expr: &mut Vec<&Token>) {
+    let mut i = 0;
+
+    while expr.len() > 1 {
+        print_(expr);
+        while expr[i].variable { i += 1; }
+        (expr[i].exec)(expr, i);
+        i = 0;
+    }
 }
 
 fn main() {
@@ -75,9 +98,10 @@ fn main() {
 	expr.push(&operators::Or);
 	expr.push(&operators::False);
 	expr.push(&operators::Or);
-	expr.push(&operators::True);
+	expr.push(&operators::False);
 
 	eval(&mut expr);
+    println!("Result: {}\n", (expr[0].exec)(&mut expr, 0));
 }
 
 /*
@@ -109,13 +133,13 @@ fn interpret(cmd: char, memory: &mut Vec<i32>,  ptr: &mut usize) {
 }
 
 fn main() {
-    
+
 	let mut memory = vec![0];
 	let mut ptr: usize;
 	let mut program = String::new();
 
 	io::stdin().read_line(&mut program).ok();
-	
+
 	ptr = 0;
 	for cmd in program.chars() {
 		interpret(cmd, &mut memory, &mut ptr);
