@@ -14,11 +14,14 @@ mod operators {
 
 	use token::Token;
 
-	pub static Or: Token = Token { priority: 2100, exec: or, variable: false };
-	pub static True: Token = Token { priority: -1, exec: _true, variable: true  };
-	pub static False: Token = Token { priority: -1, exec: _false, variable: true };
+	pub static And: Token = Token { priority: 2100, exec: and, variable: false };
+	pub static Or: Token = Token { priority: 2000, exec: or, variable: false };
+	pub static True: Token = Token { priority: 0, exec: _true, variable: true  };
+	pub static False: Token = Token { priority: 0, exec: _false, variable: true };
 
-/*	fn or(expr: &mut Vec<&Token>, pos: usize) -> bool {
+
+    fn and(expr: &mut Vec<&Token>, pos: usize) -> bool {
+        //println!("i: {}, expr: {}\n", pos, expr.len());
 		let mut res = false;
 		if (expr[pos - 1].exec)(expr, pos - 1) && (expr[pos + 1].exec)(expr, pos + 1) {
 			res = true;
@@ -26,13 +29,14 @@ mod operators {
 		expr.remove(pos + 1);
 		expr.remove(pos);
 		expr.remove(pos - 1);
-		if res { expr.insert(pos - 2, &True); }
-		else { expr.insert(pos - 2, &False); }
+        //println!("i: {}, expr: {}\n", pos, expr.len());
+		if res { expr.insert(pos - 1, &True); }
+		else { expr.insert(pos - 1, &False); }
 		res
-	}*/
+	}
 
     fn or(expr: &mut Vec<&Token>, pos: usize) -> bool {
-        println!("i: {}, expr: {}\n", pos, expr.len());
+        //println!("i: {}, expr: {}\n", pos, expr.len());
 		let mut res = false;
 		if (expr[pos - 1].exec)(expr, pos - 1) || (expr[pos + 1].exec)(expr, pos + 1) {
 			res = true;
@@ -40,13 +44,13 @@ mod operators {
 		expr.remove(pos + 1);
 		expr.remove(pos);
 		expr.remove(pos - 1);
-        println!("i: {}, expr: {}\n", pos, expr.len());
+        //println!("i: {}, expr: {}\n", pos, expr.len());
 		if res { expr.insert(pos - 1, &True); }
 		else { expr.insert(pos - 1, &False); }
 		res
 	}
 
-	fn _false(expr: &mut Vec<&Token>, pos: usize) -> bool {
+    fn _false(expr: &mut Vec<&Token>, pos: usize) -> bool {
 		false
 	}
 
@@ -56,15 +60,6 @@ mod operators {
 }
 
 // QUESTION diffrfence entre fn foo(&mut i: i32) et fn foo(i: &mut i32)
-
-/*
-** priority:
-**		0 -> variables
-**	 1000 -> unary operators
-**	 2000 -> binary operators
-**	 2100 -> binary operators (And)
-**	 2200 -> binary operators (Or, Xor)
-*/
 
 use token::Token;
 
@@ -76,15 +71,27 @@ fn print_(e: &mut Vec<&Token>) {
     }
 }
 
-fn eval(expr: &mut Vec<&Token>) {
+fn get_next(expr: &mut Vec<&Token>) -> usize {
     let mut i = 0;
+    let mut max = 0;
+
+    while i < expr.len() {
+        if expr[i].priority > expr[max].priority {
+            max = i;
+        }
+        i += 1;
+    }
+    max
+}
+
+fn eval(expr: &mut Vec<&Token>) -> bool {
+    let mut i: usize;
 
     while expr.len() > 1 {
-        print_(expr);
-        while expr[i].variable { i += 1; }
+        i = get_next(expr);
         (expr[i].exec)(expr, i);
-        i = 0;
     }
+    return (expr[0].exec)(expr, 0);
 }
 
 fn main() {
@@ -94,14 +101,14 @@ fn main() {
 	// A + B; A = true, B = false
 	let mut expr: Vec<&Token> = Vec::new();
 
-	expr.push(&operators::False);
+	expr.push(&operators::True);
 	expr.push(&operators::Or);
-	expr.push(&operators::False);
-	expr.push(&operators::Or);
+	expr.push(&operators::True);
+	expr.push(&operators::And);
 	expr.push(&operators::False);
 
-	eval(&mut expr);
-    println!("Result: {}\n", (expr[0].exec)(&mut expr, 0));
+	let res = eval(&mut expr);
+    println!("Result: {}\n", res);
 }
 
 /*
@@ -115,41 +122,6 @@ fn lexer(expr: &str, HashMap<str, Token>) -> Vec<Box<Token>> {
 	Vec::new()
 }
 */
-
-/* brainfuck
-fn interpret(cmd: char, memory: &mut Vec<i32>,  ptr: &mut usize) {
-	match cmd {
-		'+' => memory[*ptr] += 1,
-		'-' => memory[*ptr] -= 1,
-		'>' => {
-			if *ptr + 1== memory.len() { memory.push(0); }
-			*ptr += 1;
-		},
-		'<' => {
-			*ptr = if *ptr != 0 {*ptr - 1} else {memory.len() - 1};
-		},
-		_ => {},
-	};
-}
-
-fn main() {
-
-	let mut memory = vec![0];
-	let mut ptr: usize;
-	let mut program = String::new();
-
-	io::stdin().read_line(&mut program).ok();
-
-	ptr = 0;
-	for cmd in program.chars() {
-		interpret(cmd, &mut memory, &mut ptr);
-	}
-
-	for e in memory {
-		println!("{}", e);
-	}
-
-}*/
 
 /*
 faire un eval d'expr simple
