@@ -14,14 +14,25 @@ mod operators {
 
 	use token::Token;
 
+    pub static Negate: Token = Token { priority: 3000, exec: negate, variable: false };
 	pub static And: Token = Token { priority: 2100, exec: and, variable: false };
 	pub static Or: Token = Token { priority: 2000, exec: or, variable: false };
 	pub static True: Token = Token { priority: 0, exec: _true, variable: true  };
 	pub static False: Token = Token { priority: 0, exec: _false, variable: true };
 
+    fn negate(expr: &mut Vec<&Token>, pos: usize) -> bool {
+		let mut res = false;
+		if !(expr[pos + 1].exec)(expr, pos + 1) {
+			res = true;
+		}
+		expr.remove(pos + 1);
+		expr.remove(pos);
+		if res { expr.insert(pos, &True); }
+		else { expr.insert(pos, &False); }
+		res
+	}
 
     fn and(expr: &mut Vec<&Token>, pos: usize) -> bool {
-        //println!("i: {}, expr: {}\n", pos, expr.len());
 		let mut res = false;
 		if (expr[pos - 1].exec)(expr, pos - 1) && (expr[pos + 1].exec)(expr, pos + 1) {
 			res = true;
@@ -29,14 +40,12 @@ mod operators {
 		expr.remove(pos + 1);
 		expr.remove(pos);
 		expr.remove(pos - 1);
-        //println!("i: {}, expr: {}\n", pos, expr.len());
 		if res { expr.insert(pos - 1, &True); }
 		else { expr.insert(pos - 1, &False); }
 		res
 	}
 
     fn or(expr: &mut Vec<&Token>, pos: usize) -> bool {
-        //println!("i: {}, expr: {}\n", pos, expr.len());
 		let mut res = false;
 		if (expr[pos - 1].exec)(expr, pos - 1) || (expr[pos + 1].exec)(expr, pos + 1) {
 			res = true;
@@ -44,7 +53,6 @@ mod operators {
 		expr.remove(pos + 1);
 		expr.remove(pos);
 		expr.remove(pos - 1);
-        //println!("i: {}, expr: {}\n", pos, expr.len());
 		if res { expr.insert(pos - 1, &True); }
 		else { expr.insert(pos - 1, &False); }
 		res
@@ -63,11 +71,14 @@ mod operators {
 
 use token::Token;
 
-// todo a la place de mettre directement true ou false, mettre un token variable qui va se remplacer totu seuk par true ou false quand on l'eval et/ou se register
-
 fn print_(e: &mut Vec<&Token>) {
+    println!("Len: {}", e.len());
     for t in e {
-        println!("var: {}", t.variable);
+        print!("var: {}", t.variable);
+        //if t.variable {
+        //    print!(", val: {}", (t.exec)(e, 0));
+        //}
+        println!("");
     }
 }
 
@@ -88,7 +99,10 @@ fn eval(expr: &mut Vec<&Token>) -> bool {
     let mut i: usize;
 
     while expr.len() > 1 {
+        //println!("======\n");
         i = get_next(expr);
+        //println!("i: {}", i);
+        //print_(expr);
         (expr[i].exec)(expr, i);
     }
     return (expr[0].exec)(expr, 0);
@@ -101,11 +115,12 @@ fn main() {
 	// A + B; A = true, B = false
 	let mut expr: Vec<&Token> = Vec::new();
 
-	expr.push(&operators::True);
-	expr.push(&operators::Or);
+	//expr.push(&operators::False);
+	//expr.push(&operators::Or);
 	expr.push(&operators::True);
 	expr.push(&operators::And);
-	expr.push(&operators::False);
+	expr.push(&operators::Negate);
+	expr.push(&operators::True);
 
 	let res = eval(&mut expr);
     println!("Result: {}\n", res);
