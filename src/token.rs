@@ -33,22 +33,15 @@ pub mod Operators {
             if expr[i].operator_type == Type::Bracket_open {
                 bracket(expr, i);
             }
-            super::super::eval(&mut expr[pos..i].to_vec());
+            if expr[i].operator_type == Type::Bracket_close {
+                let res = super::super::eval(&mut expr[pos..i].to_vec());
+                while expr[pos].operator_type != Type::Bracket_close {
+                    expr.remove(pos);
+                }
+                expr.remove(pos);
+                expr.insert(pos, if res { &True } else { &False });
+            }
         }
-        /*for i in pos..expr.len() {
-          if expr[i].operator_type == Type::Bracket_open {
-          c += 1;
-          }
-          if expr[i].operator_type == Type::Bracket_close {
-          c -= 1;
-          }
-          if c == 0 {
-          expr.remove(i);
-          break;
-          }
-          expr[i].priority += 10000;
-          }
-          expr.remove(pos);*/
         true
     }
 

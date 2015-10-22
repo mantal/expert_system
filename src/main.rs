@@ -47,7 +47,7 @@ fn main() {
 	// A + B; A = true, B = false
 	let mut expr: Vec<&Token> = Vec::new();
 
-	expr.push(&Operators::False);
+	expr.push(&Operators::True);
 	expr.push(&Operators::And);
 	expr.push(&Operators::Bracket_open);
 	expr.push(&Operators::True);
@@ -87,4 +87,11 @@ Gere les queries
 Parse fichier
 ???
 Profit
+*/
+
+/*
+
+Cas d'erreur
+- ()??
+
 */
