@@ -1,97 +1,12 @@
-//use std::io;
-//use std::env;
-
-mod token {
-
-	pub struct Token {
-        pub variable: bool,
-		pub priority: i32,
-		pub exec: fn(&mut Vec<&Token>, usize) -> bool
-	}
-}
-
-mod operators {
-
-	use token::Token;
-
-    pub static Negate: Token = Token { priority: 3000, exec: negate, variable: false };
-	pub static And: Token = Token { priority: 2200, exec: and, variable: false };
-	pub static Xor: Token = Token { priority: 2100, exec: xor, variable: false };
-	pub static Or: Token = Token { priority: 2000, exec: or, variable: false };
-	pub static True: Token = Token { priority: 0, exec: _true, variable: true  };
-	pub static False: Token = Token { priority: 0, exec: _false, variable: true };
-
-    fn negate(expr: &mut Vec<&Token>, pos: usize) -> bool {
-		let mut res = false;
-		if !(expr[pos + 1].exec)(expr, pos + 1) {
-			res = true;
-		}
-		expr.remove(pos + 1);
-		expr.remove(pos);
-		if res { expr.insert(pos, &True); }
-		else { expr.insert(pos, &False); }
-		res
-	}
-
-    fn and(expr: &mut Vec<&Token>, pos: usize) -> bool {
-		let mut res = false;
-		if (expr[pos - 1].exec)(expr, pos - 1) && (expr[pos + 1].exec)(expr, pos + 1) {
-			res = true;
-		}
-		expr.remove(pos + 1);
-		expr.remove(pos);
-		expr.remove(pos - 1);
-		if res { expr.insert(pos - 1, &True); }
-		else { expr.insert(pos - 1, &False); }
-		res
-	}
-
-    fn or(expr: &mut Vec<&Token>, pos: usize) -> bool {
-		let mut res = false;
-		if (expr[pos - 1].exec)(expr, pos - 1) || (expr[pos + 1].exec)(expr, pos + 1) {
-			res = true;
-		}
-		expr.remove(pos + 1);
-		expr.remove(pos);
-		expr.remove(pos - 1);
-		if res { expr.insert(pos - 1, &True); }
-		else { expr.insert(pos - 1, &False); }
-		res
-	}
-
-    fn xor(expr: &mut Vec<&Token>, pos: usize) -> bool {
-		let mut res = false;
-        let a = (expr[pos - 1].exec)(expr, pos - 1);
-        let b = (expr[pos + 1].exec)(expr, pos + 1);
-
-		if (a || b) && (!a || !b) {
-            res = true;
-		}
-		expr.remove(pos + 1);
-		expr.remove(pos);
-		expr.remove(pos - 1);
-		if res { expr.insert(pos - 1, &True); }
-		else { expr.insert(pos - 1, &False); }
-		res
-	}
-
-    fn _false(expr: &mut Vec<&Token>, pos: usize) -> bool {
-		false
-	}
-
-	fn _true(expr: &mut Vec<&Token>, pos: usize) -> bool {
-		true
-	}
-}
-
-// QUESTION diffrfence entre fn foo(&mut i: i32) et fn foo(i: &mut i32)
+mod token;
 
 use token::Token;
+use token::Operators;
 
 fn print_(e: &mut Vec<&Token>) {
     println!("Len: {}", e.len());
     for t in e {
-        print!("var: {}", t.variable);
+        print!("Type: {:?}", t.operator_type);
         //if t.variable {
         //    print!(", val: {}", (t.exec)(e, 0));
         //}
@@ -112,7 +27,7 @@ fn get_next(expr: &mut Vec<&Token>) -> usize {
     max
 }
 
-fn eval(expr: &mut Vec<&Token>) -> bool {
+pub fn eval(expr: &mut Vec<&Token>) -> bool {
     let mut i: usize;
 
     while expr.len() > 1 {
@@ -132,12 +47,13 @@ fn main() {
 	// A + B; A = true, B = false
 	let mut expr: Vec<&Token> = Vec::new();
 
-	expr.push(&operators::False);
-	expr.push(&operators::Xor);
-	expr.push(&operators::False);
-	//expr.push(&operators::And);
-	//expr.push(&operators::Negate);
-	//expr.push(&operators::True);
+	expr.push(&Operators::False);
+	expr.push(&Operators::And);
+	expr.push(&Operators::Bracket_open);
+	expr.push(&Operators::True);
+	expr.push(&Operators::Or);
+	expr.push(&Operators::True);
+	expr.push(&Operators::Bracket_close);
 
 	let res = eval(&mut expr);
     println!("Result: {}\n", res);
