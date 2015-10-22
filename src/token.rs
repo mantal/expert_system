@@ -20,8 +20,8 @@ pub mod Operators {
 
     pub static Negate: Token = Token { priority: 3000, exec: negate, operator_type: Type::Unary };
     pub static And: Token = Token { priority: 2200, exec: and, operator_type: Type::Binary };
-    pub static Xor: Token = Token { priority: 2100, exec: xor, operator_type: Type::Binary };
-    pub static Or: Token = Token { priority: 2000, exec: or, operator_type: Type::Binary };
+    pub static Xor: Token = Token { priority: 2000, exec: xor, operator_type: Type::Binary };
+    pub static Or: Token = Token { priority: 2100, exec: or, operator_type: Type::Binary };
     pub static True: Token = Token { priority: 0, exec: _true, operator_type: Type::Operand };
     pub static False: Token = Token { priority: 0, exec: _false, operator_type: Type::Operand };
     pub static Bracket_open: Token = Token { priority: 4000, exec: bracket, operator_type: Type::Bracket_open };
