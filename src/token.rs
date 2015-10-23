@@ -1,7 +1,7 @@
 pub struct Token {
     pub operator_type: Operators::Type,
     pub priority: i32,
-    pub exec: fn(&mut Vec<&Token>, usize) -> Value
+    pub exec: fn(&mut Vec<&Token>, usize) -> Operators::Value
 }
 
 pub mod Operators {
@@ -29,6 +29,9 @@ pub mod Operators {
     pub static Bracket_close: Token = Token { priority: -1, exec: _false, operator_type: Type::Bracket_close };
     pub static Variable: Token = Token { priority: 0, exec: variable, operator_type: Type::Operand { name: 'A' } };
 
+    #[derive(Eq)]
+    #[derive(PartialEq)]
+    #[derive(Debug, Copy, Clone)]
     pub enum Value {
         True,
         False,
@@ -55,66 +58,85 @@ pub mod Operators {
                     expr.remove(pos);
                 }
                 expr.remove(pos);
-                expr.insert(pos, if res { &True } else { &False });
+                expr.insert(pos, valueToToken(res));
             }
         }
-        Unknow::True
+        Value::True
     }
 
     fn negate(expr: &mut Vec<&Token>, pos: usize) -> Value {
-        let res = (expr[pos + 1].exec)(expr, pos + 1);
+        let a = (expr[pos + 1].exec)(expr, pos + 1);
+
+        let res = match a {
+            Value::False => Value::True,
+            Value::True  => Value::False,
+            _            => Value::Unknow,
+        };
 
         expr.remove(pos + 1);
         expr.remove(pos);
-
-        match res {
-            Value::True => expr.insert(pos, &True),//TODO function + finir bool=>Value
-            Value::False => expr.insert(pos, &False),
-            _ => expr.insert(pos, &Unknow),
-        }
+        expr.insert(pos, valueToToken(res));
 
         res
     }
 
     fn and(expr: &mut Vec<&Token>, pos: usize) -> Value {
-        let mut res = 0;
-        if (expr[pos - 1].exec)(expr, pos - 1) && (expr[pos + 1].exec)(expr, pos + 1) {
-            res = 1;
-        }
+        let a = (expr[pos - 1].exec)(expr, pos - 1);
+        let b = (expr[pos + 1].exec)(expr, pos + 1);
+
+        let res = if a == Value::True && b == Value::True {
+            Value::True
+        } else if a == Value::Unknow || b == Value::Unknow {
+            Value::Unknow
+        } else {
+            Value::False
+        };
+
         expr.remove(pos + 1);
         expr.remove(pos);
         expr.remove(pos - 1);
-        if res { expr.insert(pos - 1, &True); }
-        else { expr.insert(pos - 1, &False); }
+        expr.insert(pos - 1, valueToToken(res));
+
         res
     }
 
     fn or(expr: &mut Vec<&Token>, pos: usize) -> Value {
-        let mut res = 0;
-        if (expr[pos - 1].exec)(expr, pos - 1) || (expr[pos + 1].exec)(expr, pos + 1) {
-            res = 1;
-        }
+        let a = (expr[pos - 1].exec)(expr, pos - 1);
+        let b = (expr[pos + 1].exec)(expr, pos + 1);
+
+        let res = if a == Value::True || b == Value::True {
+            Value::True
+        } else if a == Value::False && b == Value::False {
+            Value::False
+        } else {
+            Value::Unknow
+        };
+
         expr.remove(pos + 1);
         expr.remove(pos);
         expr.remove(pos - 1);
-        if res { expr.insert(pos - 1, &True); }
-        else { expr.insert(pos - 1, &False); }
+        expr.insert(pos - 1, valueToToken(res));
+
         res
     }
 
-    fn xor(expr: &mut Vec<&Token>, pos: usize) -> i32 {
-        let mut res = 0;
-        let a = (expr[pos - 1].exec)(expr, pos - 1) as bool;//TODO unknow
-        let b = (expr[pos + 1].exec)(expr, pos + 1) as bool;
+    fn xor(expr: &mut Vec<&Token>, pos: usize) -> Value {
+        let a = (expr[pos - 1].exec)(expr, pos - 1);
+        let b = (expr[pos + 1].exec)(expr, pos + 1);
 
-        if (a || b) && (!a || !b) {
-            res = 1;
-        }
+        let res = if a == Value::Unknow || b == Value::Unknow {
+            Value::Unknow
+        } else if a == Value::True && b == Value::True || a == Value::False && b == Value::False {
+            Value::False
+        } else {
+            Value::True
+        };
+
         expr.remove(pos + 1);
         expr.remove(pos);
         expr.remove(pos - 1);
-        if res { expr.insert(pos - 1, &True); }
-        else { expr.insert(pos - 1, &False); }
+        expr.insert(pos - 1, valueToToken(res));
+
         res
     }
 
@@ -124,5 +146,13 @@ pub mod Operators {
 
     fn _true(expr: &mut Vec<&Token>, pos: usize) -> Value {
         Value::True
+    }
+
+    fn valueToToken(value: Value) -> &'static Token {
+        match value {
+            Value::True     => &True,
+            Value::False    => &False,
+            _               => &Unknow,
+        }
     }
 }

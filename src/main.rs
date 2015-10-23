@@ -27,7 +27,7 @@ fn get_next(expr: &mut Vec<&Token>) -> usize {
     max
 }
 
-pub fn eval(expr: &mut Vec<&Token>) -> bool {
+pub fn eval(expr: &mut Vec<&Token>) -> Operators::Value {
     let mut i: usize;
 
     while expr.len() > 1 {
@@ -47,7 +47,7 @@ fn main() {
 	// A + B; A = true, B = false
 	let mut expr: Vec<&Token> = Vec::new();
 
-	expr.push(&Operators::True);
+	expr.push(&Operators::False);
 	expr.push(&Operators::And);
 	expr.push(&Operators::Bracket_open);
 	expr.push(&Operators::True);
@@ -56,7 +56,7 @@ fn main() {
 	expr.push(&Operators::Bracket_close);
 
 	let res = eval(&mut expr);
-    println!("Result: {}\n", res);
+    println!("Result: {:?}\n", res);
 }
 
 /*
