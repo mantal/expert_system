@@ -86,10 +86,10 @@ pub mod Operators {
 
         let res = if a == Value::True && b == Value::True {
             Value::True
-        } else if a == Value::Unknow || b == Value::Unknow {
-            Value::Unknow
-        } else {
+        } else if a == Value::False || b == Value::False {
             Value::False
+        } else {
+            Value::Unknow
         };
 
         expr.remove(pos + 1);
