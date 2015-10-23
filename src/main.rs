@@ -1,3 +1,4 @@
+mod tests;
 mod token;
 
 use token::Token;
@@ -47,10 +48,10 @@ fn main() {
 	// A + B; A = true, B = false
 	let mut expr: Vec<&Token> = Vec::new();
 
-	expr.push(&Operators::False);
+	expr.push(&Operators::True);
 	expr.push(&Operators::And);
 	expr.push(&Operators::Bracket_open);
-	expr.push(&Operators::True);
+	expr.push(&Operators::Unknow);
 	expr.push(&Operators::Or);
 	expr.push(&Operators::True);
 	expr.push(&Operators::Bracket_close);
