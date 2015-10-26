@@ -58,7 +58,7 @@ pub mod Operators {
                     expr.remove(pos);
                 }
                 expr.remove(pos);
-                expr.insert(pos, valueToToken(res));
+                expr.insert(pos, value_to_token(res));
             }
         }
         Value::True
@@ -75,7 +75,7 @@ pub mod Operators {
 
         expr.remove(pos + 1);
         expr.remove(pos);
-        expr.insert(pos, valueToToken(res));
+        expr.insert(pos, value_to_token(res));
 
         res
     }
@@ -95,7 +95,7 @@ pub mod Operators {
         expr.remove(pos + 1);
         expr.remove(pos);
         expr.remove(pos - 1);
-        expr.insert(pos - 1, valueToToken(res));
+        expr.insert(pos - 1, value_to_token(res));
 
         res
     }
@@ -115,7 +115,7 @@ pub mod Operators {
         expr.remove(pos + 1);
         expr.remove(pos);
         expr.remove(pos - 1);
-        expr.insert(pos - 1, valueToToken(res));
+        expr.insert(pos - 1, value_to_token(res));
 
         res
     }
@@ -135,7 +135,7 @@ pub mod Operators {
         expr.remove(pos + 1);
         expr.remove(pos);
         expr.remove(pos - 1);
-        expr.insert(pos - 1, valueToToken(res));
+        expr.insert(pos - 1, value_to_token(res));
 
         res
     }
@@ -148,7 +148,7 @@ pub mod Operators {
         Value::True
     }
 
-    fn valueToToken(value: Value) -> &'static Token {
+    fn value_to_token(value: Value) -> &'static Token {
         match value {
             Value::True     => &True,
             Value::False    => &False,
