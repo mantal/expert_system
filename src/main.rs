@@ -1,5 +1,6 @@
 mod tests;
 mod token;
+mod rule;
 
 use token::Token;
 use token::Operators;
