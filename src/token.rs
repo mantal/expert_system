@@ -8,7 +8,7 @@ pub mod Operators {
 
     use token::Token;
 
-    #[derive(PartialEq)]
+    #[derive(Eq, PartialEq)]
     #[derive(Debug)]
     pub enum Type {
         Operand { name: char },
@@ -29,8 +29,7 @@ pub mod Operators {
     pub static Bracket_close: Token = Token { priority: -1, exec: _false, operator_type: Type::Bracket_close };
     pub static Variable: Token = Token { priority: 0, exec: variable, operator_type: Type::Operand { name: 'A' } };
 
-    #[derive(Eq)]
-    #[derive(PartialEq)]
+    #[derive(Eq, PartialEq)]
     #[derive(Debug, Copy, Clone)]
     pub enum Value {
         True,
