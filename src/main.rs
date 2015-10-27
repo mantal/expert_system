@@ -33,21 +33,15 @@ pub fn eval(expr: &mut Vec<&Token>) -> Operators::Value {
     let mut i: usize;
 
     while expr.len() > 1 {
-        //println!("======\n");
         i = get_next(expr);
-        //println!("i: {}", i);
-        //print_(expr);
         (expr[i].exec)(expr, i);
     }
     return (expr[0].exec)(expr, 0);
 }
 
 fn main() {
-	//let args: Vec<_> = env::args().collect();
-
-	//todo later lexer
-	// A + B; A = true, B = false
-	let mut expr: Vec<&Token> = Vec::new();
+	//TODO lexer / parser
+    let mut expr: Vec<&Token> = Vec::new();
 
 	expr.push(&Operators::True);
 	expr.push(&Operators::And);
