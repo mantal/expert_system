@@ -27,7 +27,7 @@ fn  negate() {//TODO should be one assert / function
 fn brackets() {
     let mut expr: Vec<&Token> = Vec::new();
 
-    /*expr.push(&Operators::Bracket_open);
+    expr.push(&Operators::Bracket_open);
     expr.push(&Operators::True);
     expr.push(&Operators::Bracket_close);
     assert!(super::super::eval(&mut expr) == Value::True);
@@ -45,13 +45,47 @@ fn brackets() {
 
     expr.clear();
 
-    */expr.push(&Operators::True);
+    expr.push(&Operators::True);
     expr.push(&Operators::And);
     expr.push(&Operators::Bracket_open);
     expr.push(&Operators::Bracket_open);
     expr.push(&Operators::False);
     expr.push(&Operators::Or);
     expr.push(&Operators::True);
+    expr.push(&Operators::Bracket_close);
+    expr.push(&Operators::Bracket_close);
+    assert!(super::super::eval(&mut expr) == Value::True);
+
+    expr.clear();
+
+    // (T | F) + (F | T) => True
+    expr.push(&Operators::Bracket_open);
+    expr.push(&Operators::True);
+    expr.push(&Operators::Or);
+    expr.push(&Operators::False);
+    expr.push(&Operators::Bracket_close);
+    expr.push(&Operators::And);
+    expr.push(&Operators::Bracket_open);
+    expr.push(&Operators::False);
+    expr.push(&Operators::Or);
+    expr.push(&Operators::True);
+    expr.push(&Operators::Bracket_close);
+    assert!(super::super::eval(&mut expr) == Value::True);
+
+    expr.clear();
+
+    // ((((T) & (T)))) => True
+    expr.push(&Operators::Bracket_open);
+    expr.push(&Operators::Bracket_open);
+    expr.push(&Operators::Bracket_open);
+    expr.push(&Operators::Bracket_open);
+    expr.push(&Operators::True);
+    expr.push(&Operators::Bracket_close);
+    expr.push(&Operators::And);
+    expr.push(&Operators::Bracket_open);
+    expr.push(&Operators::True);
+    expr.push(&Operators::Bracket_close);
+    expr.push(&Operators::Bracket_close);
     expr.push(&Operators::Bracket_close);
     expr.push(&Operators::Bracket_close);
     assert!(super::super::eval(&mut expr) == Value::True);

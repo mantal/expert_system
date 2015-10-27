@@ -43,12 +43,10 @@ fn main() {
 	//TODO lexer / parser
     let mut expr: Vec<&Token> = Vec::new();
 
-	expr.push(&Operators::True);
-	expr.push(&Operators::And);
 	expr.push(&Operators::Bracket_open);
-	expr.push(&Operators::Unknow);
-	expr.push(&Operators::Or);
+	expr.push(&Operators::Bracket_open);
 	expr.push(&Operators::True);
+    expr.push(&Operators::Bracket_close);
 	expr.push(&Operators::Bracket_close);
 
 	let res = eval(&mut expr);

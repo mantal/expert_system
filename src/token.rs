@@ -47,7 +47,8 @@ pub mod Operators {
 
     fn bracket(expr: &mut Vec<&Token>, pos: usize) -> Value {
         expr.remove(pos);
-        for i in pos..expr.len() {
+        let mut i = pos;
+        while i < expr.len() {
             if expr[i].operator_type == Type::Bracket_open {
                 bracket(expr, i);
             }
@@ -59,6 +60,7 @@ pub mod Operators {
                 expr.remove(pos);
                 expr.insert(pos, value_to_token(res));
             }
+            i += 1;
         }
         Value::True
     }
