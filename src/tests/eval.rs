@@ -75,7 +75,7 @@ fn brackets() {
     expr.clear();
 
     // ((((T) & (T)))) => True
-    expr.push(&Operators::Bracket_open);
+    //expr.push(&Operators::Bracket_open);
     expr.push(&Operators::Bracket_open);
     expr.push(&Operators::Bracket_open);
     expr.push(&Operators::Bracket_open);
@@ -87,7 +87,7 @@ fn brackets() {
     expr.push(&Operators::Bracket_close);
     expr.push(&Operators::Bracket_close);
     expr.push(&Operators::Bracket_close);
-    expr.push(&Operators::Bracket_close);
+    //expr.push(&Operators::Bracket_close);
     assert!(super::super::eval(&mut expr) == Value::True);
 }
 

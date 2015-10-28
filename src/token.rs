@@ -59,6 +59,8 @@ pub mod Operators {
                 }
                 expr.remove(pos);
                 expr.insert(pos, value_to_token(res));
+                i = 0;
+                continue;
             }
             i += 1;
         }

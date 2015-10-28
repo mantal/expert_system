@@ -45,8 +45,10 @@ fn main() {
 
 	expr.push(&Operators::Bracket_open);
 	expr.push(&Operators::Bracket_open);
+	expr.push(&Operators::Bracket_open);
 	expr.push(&Operators::True);
     expr.push(&Operators::Bracket_close);
+	expr.push(&Operators::Bracket_close);
 	expr.push(&Operators::Bracket_close);
 
 	let res = eval(&mut expr);
