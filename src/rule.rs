@@ -8,7 +8,7 @@ pub struct Rule<'a> {
 }
 
 pub fn query(rules: Vec<Rule>, var: char) -> Value {
-    let mut arr = rules.iter().filter(|&e| e.variable == var)
+    let arr = rules.iter().filter(|&e| e.variable == var)
                             .map(|ref e| super::eval(&mut e.rule.clone()))
                             .collect::<Vec<_>>();
 

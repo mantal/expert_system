@@ -5,7 +5,7 @@ mod rule;
 use token::Token;
 use token::Operators;
 
-fn print_(e: &mut Vec<&Token>) {
+fn _print(e: &mut Vec<&Token>) {
     println!("Len: {}", e.len());
     for t in e {
         print!("Type: {:?}", t.operator_type);

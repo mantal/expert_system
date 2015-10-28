@@ -4,6 +4,7 @@ pub struct Token {
     pub exec: fn(&mut Vec<&Token>, usize) -> Operators::Value
 }
 
+#[allow(unused_variables, dead_code, non_upper_case_globals, non_camel_case_types, non_snake_case)]
 pub mod Operators {
 
     use token::Token;
