@@ -1,3 +1,5 @@
+use parser;
+
 pub struct Token {
     pub operator_type: Operators::Type,
     pub priority: i32,
@@ -36,6 +38,10 @@ pub mod Operators {
         True,
         False,
         Unknow
+    }
+
+    pub fn create_var<'a>(c: char) -> &'a Token {
+        &Token { priority: 0, exec: variable, operator_type: Type::Operand { name: c } }
     }
 
     fn variable(expr: &mut Vec<&Token>, pos: usize) -> Value {
