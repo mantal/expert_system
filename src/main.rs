@@ -11,8 +11,7 @@ use std::path::Path;
 use token::Token;
 use token::Operators;
 
-use parser::get_file;
-use parser::line_processing;
+use parser::file_to_expr;
 
 fn _print(e: &mut Vec<&Token>) {
 	println!("Len: {}", e.len());
@@ -63,12 +62,7 @@ fn main() {
 	let res = eval(&mut expr);
 	println!("Result: {:?}\n", res);
 
-		let mut f = get_file();
-		let mut file = BufReader::new(&f);
-		for line in file.lines() {
-			let l = line.unwrap();
-			line_processing(l);
-		}
+    let token = file_to_expr();
 
 }
 
