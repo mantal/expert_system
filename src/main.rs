@@ -12,6 +12,7 @@ use token::Token;
 use token::Operators;
 
 use parser::get_file;
+use parser::line_processing;
 
 fn _print(e: &mut Vec<&Token>) {
 	println!("Len: {}", e.len());
@@ -66,7 +67,7 @@ fn main() {
 		let mut file = BufReader::new(&f);
 		for line in file.lines() {
 			let l = line.unwrap();
-			println!("{}", l);
+			line_processing(l);
 		}
 
 }
