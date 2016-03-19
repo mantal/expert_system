@@ -55,6 +55,7 @@ pub fn line_processing<'a>(line: String) -> Vec<&'a Token> {
                 println!("c'est un '^' au {} charactere", i);
                 expr.push(&Operators::Xor)
             },
+            b'A' ... b'Z' => i += 1,
 			b'=' => {
                 i += 1;
                 if line.as_bytes()[i] == b'>' {
