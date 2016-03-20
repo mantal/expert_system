@@ -40,9 +40,9 @@ pub mod Operators {
         Unknow
     }
 
-    pub fn create_var<'a>(c: char) -> &'a Token {
-        &Token { priority: 0, exec: variable, operator_type: Type::Operand { name: c } }
-    }
+//    pub fn create_var<'a>(tok: & 'a Token ,c: char) -> &'a Token {
+//        &'a Token { priority: 0, exec: variable, operator_type: Type::Operand { name: c } }
+//    }
 
     fn variable(expr: &mut Vec<&Token>, pos: usize) -> Value {
         Value::True

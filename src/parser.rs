@@ -56,7 +56,12 @@ pub fn line_processing<'a>(line: String) -> Vec<&'a Token> {
                 expr.push(&Operators::Xor)
             },
             b'A' ... b'Z' => {
-                expr.push(&Operators::create_var(line.as_bytes()[i] as char))
+                //expr.push(&Operators::create_var(&Operators::Variable, line.as_bytes()[i] as char))
+                println!("c'est une variable au {} charactere", i);
+                expr.push(&Operators::Variable)
+            },
+            b'\r' | b'\t' | b'\n' | b' ' => {
+                println!("space au {} charactere", i);
             },
 			b'=' => {
                 i += 1;
