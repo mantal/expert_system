@@ -44,6 +44,11 @@ pub mod Operators {
 //        &'a Token { priority: 0, exec: variable, operator_type: Type::Operand { name: c } }
 //    }
 
+    pub fn push_var_named<'a>(mut expr: Vec<&'a Token>, c: char) -> Vec<&'a Token> {
+        expr.push(&Token { priority: 0, exec: variable, operator_type: Type::Operand { name: c }});
+        expr
+    }
+
     fn variable(expr: &mut Vec<&Token>, pos: usize) -> Value {
         Value::True
     }
