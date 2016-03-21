@@ -39,7 +39,6 @@ pub mod Operators {
     pub static Unknow: Token = Token { priority: 0, exec: unknow, operator_type: Type::Operand { name: 'f' } };
     pub static Bracket_open: Token = Token { priority: 4000, exec: bracket, operator_type: Type::Bracket_open };
     pub static Bracket_close: Token = Token { priority: -1, exec: _false, operator_type: Type::Bracket_close };
-    pub static Variable: Token = Token { priority: 0, exec: variable, operator_type: Type::Operand { name: 'A' } };
 
     #[derive(Copy, Clone, Eq, PartialEq)]
     #[derive(Debug)]
@@ -50,10 +49,7 @@ pub mod Operators {
     }
 
     pub fn new_variable(name: char) -> Token {
-        let mut res = Variable;
-
-        res.operator_type = Type::Operand { name: name };
-        res
+        return Token { priority: 0, exec: variable, operator_type: Type::Operand { name: name } };
     }
     
     fn variable(expr: &mut Vec<Token>, pos: usize) -> Value {
