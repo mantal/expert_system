@@ -1,8 +1,3 @@
-use token::Token;
-use token::Operators;
-use token::Operators::Value;
-use rule::Rule;
-
 #[test]
 fn query() {
     let mut rules: Vec<Rule> = Vec::new();

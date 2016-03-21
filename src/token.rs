@@ -1,5 +1,3 @@
-use parser;
-
 #[derive(Copy)]
 pub struct Token {
     pub operator_type: Operators::Type,

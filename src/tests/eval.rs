@@ -1,7 +1,3 @@
-use token::Token;
-use token::Operators;
-use token::Operators::Value;
-
 #[test]
 fn  negate() {//TODO should be one assert / function
     let mut expr: Vec<&Token> = Vec::new();
@@ -75,7 +71,7 @@ fn brackets() {
     expr.clear();
 
     // ((((T) & (T)))) => True
-    //expr.push(&Operators::Bracket_open);
+    expr.push(&Operators::Bracket_open);
     expr.push(&Operators::Bracket_open);
     expr.push(&Operators::Bracket_open);
     expr.push(&Operators::Bracket_open);
@@ -87,7 +83,7 @@ fn brackets() {
     expr.push(&Operators::Bracket_close);
     expr.push(&Operators::Bracket_close);
     expr.push(&Operators::Bracket_close);
-    //expr.push(&Operators::Bracket_close);
+    expr.push(&Operators::Bracket_close);
     assert!(super::super::eval(&mut expr) == Value::True);
 }
 
