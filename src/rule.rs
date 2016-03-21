@@ -2,9 +2,9 @@ use token::Token;
 use token::Operators::Value;
 
 #[derive(Clone)]
-pub struct Rule<'a> {
+pub struct Rule {
     pub variable: char,
-    pub rule: Vec<&'a Token>
+    pub rule: Vec<Token>
 }
 
 pub fn query(rules: Vec<Rule>, var: char) -> Value {

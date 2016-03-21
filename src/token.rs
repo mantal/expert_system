@@ -2,7 +2,7 @@
 pub struct Token {
     pub operator_type: Operators::Type,
     pub priority: i32,
-    pub exec: fn(&mut Vec<&Token>, usize) -> Operators::Value
+    pub exec: fn(&mut Vec<Token>, usize) -> Operators::Value
 }
 
 impl Clone for Token {
@@ -56,15 +56,15 @@ pub mod Operators {
         res
     }
     
-    fn variable(expr: &mut Vec<&Token>, pos: usize) -> Value {
+    fn variable(expr: &mut Vec<Token>, pos: usize) -> Value {
         Value::True // TODO HERE
     }
 
-    fn unknow(expr: &mut Vec<&Token>, pos: usize) -> Value {
+    fn unknow(expr: &mut Vec<Token>, pos: usize) -> Value {
         Value::Unknow
     }
 
-    fn bracket(expr: &mut Vec<&Token>, pos: usize) -> Value {
+    fn bracket(expr: &mut Vec<Token>, pos: usize) -> Value {
         expr.remove(pos);
         let mut i = pos;
         while i < expr.len() {
@@ -86,7 +86,7 @@ pub mod Operators {
         Value::True
     }
 
-    fn negate(expr: &mut Vec<&Token>, pos: usize) -> Value {
+    fn negate(expr: &mut Vec<Token>, pos: usize) -> Value {
         let a = (expr[pos + 1].exec)(expr, pos + 1);
 
         let res = match a {
@@ -102,7 +102,7 @@ pub mod Operators {
         res
     }
 
-    fn and(expr: &mut Vec<&Token>, pos: usize) -> Value {
+    fn and(expr: &mut Vec<Token>, pos: usize) -> Value {
         let a = (expr[pos - 1].exec)(expr, pos - 1);
         let b = (expr[pos + 1].exec)(expr, pos + 1);
 
@@ -122,7 +122,7 @@ pub mod Operators {
         res
     }
 
-    fn or(expr: &mut Vec<&Token>, pos: usize) -> Value {
+    fn or(expr: &mut Vec<Token>, pos: usize) -> Value {
         let a = (expr[pos - 1].exec)(expr, pos - 1);
         let b = (expr[pos + 1].exec)(expr, pos + 1);
 
@@ -142,7 +142,7 @@ pub mod Operators {
         res
     }
 
-    fn xor(expr: &mut Vec<&Token>, pos: usize) -> Value {
+    fn xor(expr: &mut Vec<Token>, pos: usize) -> Value {
         let a = (expr[pos - 1].exec)(expr, pos - 1);
         let b = (expr[pos + 1].exec)(expr, pos + 1);
 
@@ -162,19 +162,19 @@ pub mod Operators {
         res
     }
 
-    fn _false(expr: &mut Vec<&Token>, pos: usize) -> Value {
+    fn _false(expr: &mut Vec<Token>, pos: usize) -> Value {
         Value::False
     }
 
-    fn _true(expr: &mut Vec<&Token>, pos: usize) -> Value {
+    fn _true(expr: &mut Vec<Token>, pos: usize) -> Value {
         Value::True
     }
 
-    fn value_to_token(value: Value) -> &'static Token {
+    fn value_to_token(value: Value) -> Token {
         match value {
-            Value::True     => &True,
-            Value::False    => &False,
-            _               => &Unknow,
+            Value::True     => True,
+            Value::False    => False,
+            _               => Unknow,
         }
     }
 }

@@ -8,7 +8,7 @@ use token::Operators;
 
 use parser::file_to_expr;
 
-fn _print(e: &mut Vec<&Token>) {
+fn _print(e: &mut Vec<Token>) {
 	println!("Len: {}", e.len());
 	for t in e {
 		print!("Type: {:?}", t.operator_type);
@@ -19,7 +19,7 @@ fn _print(e: &mut Vec<&Token>) {
 	}
 }
 
-fn get_next(expr: &mut Vec<&Token>) -> usize {
+fn get_next(expr: &mut Vec<Token>) -> usize {
 	let mut i = 0;
 	let mut max = 0;
 
@@ -32,7 +32,7 @@ fn get_next(expr: &mut Vec<&Token>) -> usize {
 	max
 }
 
-pub fn eval(expr: &mut Vec<&Token>) -> Operators::Value {
+pub fn eval(expr: &mut Vec<Token>) -> Operators::Value {
 	let mut i: usize;
 
 	while expr.len() > 1 {
@@ -44,15 +44,15 @@ pub fn eval(expr: &mut Vec<&Token>) -> Operators::Value {
 
 fn main() {
 	//TODO lexer / parser
-	let mut expr: Vec<&Token> = Vec::new();
+	let mut expr: Vec<Token> = Vec::new();
 
-	expr.push(&Operators::Bracket_open);
-	expr.push(&Operators::Bracket_open);
-	expr.push(&Operators::Bracket_open);
-	expr.push(&Operators::True);
-	expr.push(&Operators::Bracket_close);
-	expr.push(&Operators::Bracket_close);
-	expr.push(&Operators::Bracket_close);
+	expr.push(Operators::Bracket_open);
+	expr.push(Operators::Bracket_open);
+	expr.push(Operators::Bracket_open);
+	expr.push(Operators::True);
+	expr.push(Operators::Bracket_close);
+	expr.push(Operators::Bracket_close);
+	expr.push(Operators::Bracket_close);
 
 	let res = eval(&mut expr);
 	println!("Result: {:?}\n", res);
