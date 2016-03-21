@@ -1,9 +1,20 @@
 use parser;
 
+#[derive(Copy)]
 pub struct Token {
     pub operator_type: Operators::Type,
     pub priority: i32,
     pub exec: fn(&mut Vec<&Token>, usize) -> Operators::Value
+}
+
+impl Clone for Token {
+    fn clone(&self) -> Self {
+        Token {
+            operator_type: self.operator_type,
+			priority: self.priority,
+            exec: self.exec
+        }
+    }
 }
 
 #[allow(unused_variables, dead_code, non_upper_case_globals, non_camel_case_types, non_snake_case)]
@@ -11,7 +22,7 @@ pub mod Operators {
 
     use token::Token;
 
-    #[derive(Eq, PartialEq)]
+    #[derive(Clone, Copy, Eq, PartialEq)]
     #[derive(Debug)]
     pub enum Type {
         Operand { name: char },
@@ -32,25 +43,23 @@ pub mod Operators {
     pub static Bracket_close: Token = Token { priority: -1, exec: _false, operator_type: Type::Bracket_close };
     pub static Variable: Token = Token { priority: 0, exec: variable, operator_type: Type::Operand { name: 'A' } };
 
-    #[derive(Eq, PartialEq)]
-    #[derive(Debug, Copy, Clone)]
+    #[derive(Copy, Clone, Eq, PartialEq)]
+    #[derive(Debug)]
     pub enum Value {
         True,
         False,
         Unknow
     }
 
-//    pub fn create_var<'a>(tok: & 'a Token ,c: char) -> &'a Token {
-//        &'a Token { priority: 0, exec: variable, operator_type: Type::Operand { name: c } }
-//    }
+    pub fn new_variable(name: char) -> Token {
+        let mut res = Variable;
 
-    pub fn push_var_named<'a>(mut expr: Vec<&'a Token>, c: char) -> Vec<&'a Token> {
-        expr.push(&Token { priority: 0, exec: variable, operator_type: Type::Operand { name: c }});
-        expr
+        res.operator_type = Type::Operand { name: name };
+        res
     }
-
+    
     fn variable(expr: &mut Vec<&Token>, pos: usize) -> Value {
-        Value::True
+        Value::True // TODO HERE
     }
 
     fn unknow(expr: &mut Vec<&Token>, pos: usize) -> Value {

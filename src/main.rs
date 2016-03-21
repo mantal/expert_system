@@ -3,11 +3,6 @@ mod token;
 mod rule;
 mod parser;
 
-use std::io::BufReader;
-use std::io::BufRead;
-use std::fs::File;
-use std::path::Path;
-
 use token::Token;
 use token::Operators;
 
@@ -65,6 +60,8 @@ fn main() {
     let token = file_to_expr();
 
 }
+
+//TODO TODO TODO rewrite logical op functions so that they dont eval variable unless needed
 
 /*
    fn lexer(expr: &str, HashMap<str, Token>) -> Vec<Box<Token>> {

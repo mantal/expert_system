@@ -57,7 +57,7 @@ pub fn line_processing<'a>(line: String) -> Vec<&'a Token> {
             },
             b'A' ... b'Z' => {
                 println!("c'est une variable au {} charactere", i);
-                expr = Operators::push_var_named(expr, line.as_bytes()[i] as char)
+                //TODO expr = Operators::push_var_named(expr, line.as_bytes()[i] as char)
             },
             b'\r' | b'\t' | b'\n' | b' ' => {
                 println!("space au {} charactere", i);
