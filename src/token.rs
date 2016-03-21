@@ -51,7 +51,7 @@ pub mod Operators {
     pub fn new_variable(name: char) -> Token {
         return Token { priority: 0, exec: variable, operator_type: Type::Operand { name: name } };
     }
-    
+
     fn variable(expr: &mut Vec<Token>, pos: usize) -> Value {
         Value::True // TODO HERE
     }

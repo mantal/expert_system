@@ -57,7 +57,10 @@ fn main() {
 	let res = eval(&mut expr);
 	println!("Result: {:?}\n", res);
 
-    let token = file_to_expr();
+    let mut expr2 = file_to_expr();
+    expr2.pop();
+	let res = eval(&mut expr2);
+	println!("Result: {:?}\n", res);
 
 }
 
