@@ -43,15 +43,10 @@ pub fn eval(rules: &Vec<Rule>, expr: &mut Vec<Token>) -> Operators::Value {
 }
 
 fn main() {
-	let mut expr: Vec<Token> = Vec::new();
-    let mut rules: Vec<Rule> = Vec::new();
-
-    
-
-	let res = eval(&rules, &mut expr);
+    let mut expr2 = file_to_expr();
+    expr2.pop();
+	let res = eval(&mut expr2);
 	println!("Result: {:?}\n", res);
-
-    //let token = file_to_expr();
 
 }
 
