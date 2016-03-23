@@ -1,3 +1,5 @@
+use rule;
+use rule::Rule;
 use token::Token;
 use token::Operators;
 use token::Operators::Value;
@@ -8,19 +10,19 @@ fn  negate() {
 
     expr.push(Operators::Negate);
     expr.push(Operators::True);
-    assert!(super::super::eval(&mut expr) == Value::False);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::False);
 
     expr.clear();
 
     expr.push(Operators::Negate);
     expr.push(Operators::False);
-    assert!(super::super::eval(&mut expr) == Value::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::True);
 
     expr.clear();
 
     expr.push(Operators::Negate);
     expr.push(Operators::Unknow);
-    assert!(super::super::eval(&mut expr) == Value::Unknow);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::Unknow);
 }
 
 #[test]
@@ -30,7 +32,7 @@ fn brackets() {
     expr.push(Operators::Bracket_open);
     expr.push(Operators::True);
     expr.push(Operators::Bracket_close);
-    assert!(super::super::eval(&mut expr) == Value::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::True);
 
     expr.clear();
 
@@ -41,7 +43,7 @@ fn brackets() {
     expr.push(Operators::Or);
     expr.push(Operators::True);
     expr.push(Operators::Bracket_close);
-    assert!(super::super::eval(&mut expr) == Value::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::True);
 
     expr.clear();
 
@@ -54,7 +56,7 @@ fn brackets() {
     expr.push(Operators::True);
     expr.push(Operators::Bracket_close);
     expr.push(Operators::Bracket_close);
-    assert!(super::super::eval(&mut expr) == Value::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::True);
 
     expr.clear();
 
@@ -70,7 +72,7 @@ fn brackets() {
     expr.push(Operators::Or);
     expr.push(Operators::True);
     expr.push(Operators::Bracket_close);
-    assert!(super::super::eval(&mut expr) == Value::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::True);
 
     expr.clear();
 
@@ -88,7 +90,7 @@ fn brackets() {
     expr.push(Operators::Bracket_close);
     expr.push(Operators::Bracket_close);
     expr.push(Operators::Bracket_close);
-    assert!(super::super::eval(&mut expr) == Value::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::True);
 }
 
 #[test]
@@ -98,35 +100,35 @@ fn and() {
     expr.push(Operators::True);
     expr.push(Operators::And);
     expr.push(Operators::True);
-    assert!(super::super::eval(&mut expr) == Value::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::True);
 
     expr.clear();
 
     expr.push(Operators::False);
     expr.push(Operators::And);
     expr.push(Operators::False);
-    assert!(super::super::eval(&mut expr) == Value::False);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::False);
 
     expr.clear();
 
     expr.push(Operators::False);
     expr.push(Operators::And);
     expr.push(Operators::True);
-    assert!(super::super::eval(&mut expr) == Value::False);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::False);
 
     expr.clear();
 
     expr.push(Operators::Unknow);
     expr.push(Operators::And);
     expr.push(Operators::False);
-    assert!(super::super::eval(&mut expr) == Value::False);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::False);
 
     expr.clear();
 
     expr.push(Operators::Unknow);
     expr.push(Operators::And);
     expr.push(Operators::True);
-    assert!(super::super::eval(&mut expr) == Value::Unknow);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::Unknow);
 }
 
 #[test]
@@ -136,35 +138,35 @@ fn or() {
     expr.push(Operators::True);
     expr.push(Operators::Or);
     expr.push(Operators::True);
-    assert!(super::super::eval(&mut expr) == Value::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::True);
 
     expr.clear();
 
     expr.push(Operators::False);
     expr.push(Operators::Or);
     expr.push(Operators::False);
-    assert!(super::super::eval(&mut expr) == Value::False);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::False);
 
     expr.clear();
 
     expr.push(Operators::False);
     expr.push(Operators::Or);
     expr.push(Operators::True);
-    assert!(super::super::eval(&mut expr) == Value::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::True);
 
     expr.clear();
 
     expr.push(Operators::Unknow);
     expr.push(Operators::Or);
     expr.push(Operators::True);
-    assert!(super::super::eval(&mut expr) == Value::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::True);
 
     expr.clear();
 
     expr.push(Operators::Unknow);
     expr.push(Operators::Or);
     expr.push(Operators::False);
-    assert!(super::super::eval(&mut expr) == Value::Unknow);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::Unknow);
 }
 
 #[test]
@@ -174,33 +176,51 @@ fn xor() {
     expr.push(Operators::True);
     expr.push(Operators::Xor);
     expr.push(Operators::True);
-    assert!(super::super::eval(&mut expr) == Value::False);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::False);
 
     expr.clear();
 
     expr.push(Operators::False);
     expr.push(Operators::Xor);
     expr.push(Operators::False);
-    assert!(super::super::eval(&mut expr) == Value::False);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::False);
 
     expr.clear();
 
     expr.push(Operators::False);
     expr.push(Operators::Xor);
     expr.push(Operators::True);
-    assert!(super::super::eval(&mut expr) == Value::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::True);
 
     expr.clear();
 
     expr.push(Operators::Unknow);
     expr.push(Operators::Xor);
     expr.push(Operators::False);
-    assert!(super::super::eval(&mut expr) == Value::Unknow);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::Unknow);
 
     expr.clear();
 
     expr.push(Operators::Unknow);
     expr.push(Operators::Xor);
     expr.push(Operators::True);
-    assert!(super::super::eval(&mut expr) == Value::Unknow);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::Unknow);
+}
+
+#[test]
+fn variable() {
+    let mut rules: Vec<Rule> = Vec::new();
+    let mut expr: Vec<Token> = Vec::new();
+
+    expr.push(Operators::True);
+    rules.push(Rule { variable: 'A', rule: expr.clone() });
+    assert!(rule::query(rules.clone(), 'A') == Value::True);
+
+    expr.clear();
+    expr.push(Operators::new_variable('A'));
+    rules.push(Rule { variable: 'B', rule: expr.clone() });
+    assert!(rule::query(rules.clone(), 'A') == Value::True);
+
+    rules.clear();
+    assert!(rule::query(rules.clone(), 'A') == Value::False);
 }

@@ -5,7 +5,7 @@ mod parser;
 
 use token::Token;
 use token::Operators;
-
+use rule::Rule;
 use parser::file_to_expr;
 
 fn _print(e: &mut Vec<Token>) {
@@ -32,32 +32,26 @@ fn get_next(expr: &mut Vec<Token>) -> usize {
 	max
 }
 
-pub fn eval(expr: &mut Vec<Token>) -> Operators::Value {
+pub fn eval(rules: &Vec<Rule>, expr: &mut Vec<Token>) -> Operators::Value {
 	let mut i: usize;
 
 	while expr.len() > 1 {
 		i = get_next(expr);
-		(expr[i].exec)(expr, i);
+		(expr[i].exec)(rules, expr, i);
 	}
-	return (expr[0].exec)(expr, 0);
+	return (expr[0].exec)(rules, expr, 0);
 }
 
 fn main() {
-	//TODO lexer / parser
 	let mut expr: Vec<Token> = Vec::new();
+    let mut rules: Vec<Rule> = Vec::new();
 
-	expr.push(Operators::Bracket_open);
-	expr.push(Operators::Bracket_open);
-	expr.push(Operators::Bracket_open);
-	expr.push(Operators::True);
-	expr.push(Operators::Bracket_close);
-	expr.push(Operators::Bracket_close);
-	expr.push(Operators::Bracket_close);
+    
 
-	let res = eval(&mut expr);
+	let res = eval(&rules, &mut expr);
 	println!("Result: {:?}\n", res);
 
-    let token = file_to_expr();
+    //let token = file_to_expr();
 
 }
 

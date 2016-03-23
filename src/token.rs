@@ -1,15 +1,17 @@
+use rule::Rule;
+
 #[derive(Copy)]
 pub struct Token {
     pub operator_type: Operators::Type,
     pub priority: i32,
-    pub exec: fn(&mut Vec<Token>, usize) -> Operators::Value
+    pub exec: fn(&Vec<Rule>, &mut Vec<Token>, usize) -> Operators::Value
 }
 
 impl Clone for Token {
     fn clone(&self) -> Self {
         Token {
             operator_type: self.operator_type,
-			priority: self.priority,
+            priority: self.priority,
             exec: self.exec
         }
     }
@@ -19,6 +21,8 @@ impl Clone for Token {
 pub mod Operators {
 
     use token::Token;
+    use rule;
+    use rule::Rule;
 
     #[derive(Clone, Copy, Eq, PartialEq)]
     #[derive(Debug)]
@@ -28,6 +32,15 @@ pub mod Operators {
         Binary,
         Bracket_open,
         Bracket_close
+    }
+
+    impl Token {
+        pub fn get_name(&self) -> char {
+            match self.operator_type {
+                Type::Operand{name} => name,
+                _ => panic!("Called get_name on a non variable token"),
+            }
+        }
     }
 
     pub static Negate: Token = Token { priority: 3000, exec: negate, operator_type: Type::Unary };
@@ -52,23 +65,23 @@ pub mod Operators {
         return Token { priority: 0, exec: variable, operator_type: Type::Operand { name: name } };
     }
     
-    fn variable(expr: &mut Vec<Token>, pos: usize) -> Value {
-        Value::True // TODO HERE
+    fn variable(rules: &Vec<Rule>, expr: &mut Vec<Token>, pos: usize) -> Value {
+        rule::query(rules.clone(), expr[pos].get_name())
     }
 
-    fn unknow(expr: &mut Vec<Token>, pos: usize) -> Value {
+    fn unknow(rules: &Vec<Rule>, expr: &mut Vec<Token>, pos: usize) -> Value {
         Value::Unknow
     }
 
-    fn bracket(expr: &mut Vec<Token>, pos: usize) -> Value {
+    fn bracket(rules: &Vec<Rule>, expr: &mut Vec<Token>, pos: usize) -> Value {
         expr.remove(pos);
         let mut i = pos;
         while i < expr.len() {
             if expr[i].operator_type == Type::Bracket_open {
-                bracket(expr, i);
+                bracket(rules, expr, i);
             }
             if expr[i].operator_type == Type::Bracket_close {
-                let res = super::super::eval(&mut expr[pos..i].to_vec());
+                let res = super::super::eval(rules, &mut expr[pos..i].to_vec());
                 while expr[pos].operator_type != Type::Bracket_close {
                     expr.remove(pos);
                 }
@@ -82,8 +95,8 @@ pub mod Operators {
         Value::True
     }
 
-    fn negate(expr: &mut Vec<Token>, pos: usize) -> Value {
-        let a = (expr[pos + 1].exec)(expr, pos + 1);
+    fn negate(rules: &Vec<Rule>, expr: &mut Vec<Token>, pos: usize) -> Value {
+        let a = (expr[pos + 1].exec)(rules, expr, pos + 1);
 
         let res = match a {
             Value::False => Value::True,
@@ -98,9 +111,9 @@ pub mod Operators {
         res
     }
 
-    fn and(expr: &mut Vec<Token>, pos: usize) -> Value {
-        let a = (expr[pos - 1].exec)(expr, pos - 1);
-        let b = (expr[pos + 1].exec)(expr, pos + 1);
+    fn and(rules: &Vec<Rule>, expr: &mut Vec<Token>, pos: usize) -> Value {
+        let a = (expr[pos - 1].exec)(rules, expr, pos - 1);
+        let b = (expr[pos + 1].exec)(rules, expr, pos + 1);
 
         let res = if a == Value::True && b == Value::True {
             Value::True
@@ -118,9 +131,9 @@ pub mod Operators {
         res
     }
 
-    fn or(expr: &mut Vec<Token>, pos: usize) -> Value {
-        let a = (expr[pos - 1].exec)(expr, pos - 1);
-        let b = (expr[pos + 1].exec)(expr, pos + 1);
+    fn or(rules: &Vec<Rule>, expr: &mut Vec<Token>, pos: usize) -> Value {
+        let a = (expr[pos - 1].exec)(rules, expr, pos - 1);
+        let b = (expr[pos + 1].exec)(rules, expr, pos + 1);
 
         let res = if a == Value::True || b == Value::True {
             Value::True
@@ -138,9 +151,9 @@ pub mod Operators {
         res
     }
 
-    fn xor(expr: &mut Vec<Token>, pos: usize) -> Value {
-        let a = (expr[pos - 1].exec)(expr, pos - 1);
-        let b = (expr[pos + 1].exec)(expr, pos + 1);
+    fn xor(rules: &Vec<Rule>, expr: &mut Vec<Token>, pos: usize) -> Value {
+        let a = (expr[pos - 1].exec)(rules, expr, pos - 1);
+        let b = (expr[pos + 1].exec)(rules, expr, pos + 1);
 
         let res = if a == Value::Unknow || b == Value::Unknow {
             Value::Unknow
@@ -158,11 +171,11 @@ pub mod Operators {
         res
     }
 
-    fn _false(expr: &mut Vec<Token>, pos: usize) -> Value {
+    fn _false(rules: &Vec<Rule>, expr: &mut Vec<Token>, pos: usize) -> Value {
         Value::False
     }
 
-    fn _true(expr: &mut Vec<Token>, pos: usize) -> Value {
+    fn _true(rules: &Vec<Rule>, expr: &mut Vec<Token>, pos: usize) -> Value {
         Value::True
     }
 

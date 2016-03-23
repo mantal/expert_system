@@ -24,5 +24,5 @@ fn query_inconsistent() {
 
     rules.push(Rule { variable: 'A', rule: rule_true});
     rules.push(Rule { variable: 'A', rule: rule_false});
-    let res = super::super::rule::query(rules.clone(), 'A');
+    super::super::rule::query(rules.clone(), 'A');
 }
