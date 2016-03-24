@@ -62,22 +62,25 @@ pub fn line_processing(line: String) -> Vec<Token> {
             b'\r' | b'\t' | b'\n' | b' ' => {
                 println!("space au {} charactere", i);
             },
-			b'=' => {
+            b'#' => {
+                return expr;
+            },
+			b'=' => { // implique =>
                 i += 1;
                 if line.as_bytes()[i] == b'>' {
-                    //dosomething();
-                    println!("c'est un '=>' du {} au  {} charactere", i-1, i)
+                    println!("c'est un '=>' du {} au  {} charactere", i-1, i);
+                    expr.push(Operators::implies)
                 }
                 else {
                     panic!("caractere N.{} indefinit vouliez vous ecrire => ?", i)
                 }
             },
-			b'<' => {
+			b'<' => { // si et seulement si <=>
                 i += 1;
                 if line.as_bytes()[i] == b'=' && line.as_bytes()[i+1] == b'>' {
                     i += 1;
-                    //dosomething();
-                    println!("c'est un '<=>' du {} au  {} charactere", i-2, i)
+                    println!("c'est un '<=>' du {} au  {} charactere", i-2, i);
+                    expr.push(Operators::if_and_only_if)
                 }
                 else {
                     panic!("caractere N.{} indefinit vouliez vous ecrire <=> ?", i)

@@ -45,9 +45,9 @@ pub fn eval(rules: &Vec<Rule>, expr: &mut Vec<Token>) -> Operators::Value {
 fn main() {
     let mut expr2 = file_to_expr();
     expr2.pop();
+    expr2.pop();
 	let res = eval(&Vec::new(), &mut expr2);
 	println!("Result: {:?}\n", res);
-
 }
 
 //TODO TODO TODO rewrite logical op functions so that they dont eval variable unless needed

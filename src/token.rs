@@ -31,7 +31,9 @@ pub mod Operators {
         Unary,
         Binary,
         Bracket_open,
-        Bracket_close
+        Bracket_close,
+        implies,
+        if_and_only_if
     }
 
     impl Token {
@@ -53,6 +55,9 @@ pub mod Operators {
     pub static Bracket_open: Token = Token { priority: 4000, exec: bracket, operator_type: Type::Bracket_open };
     pub static Bracket_close: Token = Token { priority: -1, exec: _false, operator_type: Type::Bracket_close };
 
+    pub static implies: Token = Token { priority: -1, exec: _false, operator_type: Type::implies };
+    pub static if_and_only_if: Token = Token { priority: -1, exec: _false, operator_type: Type::if_and_only_if };
+
     #[derive(Copy, Clone, Eq, PartialEq)]
     #[derive(Debug)]
     pub enum Value {
@@ -64,7 +69,7 @@ pub mod Operators {
     pub fn new_variable(name: char) -> Token {
         return Token { priority: 0, exec: variable, operator_type: Type::Operand { name: name } };
     }
-    
+
     fn variable(rules: &Vec<Rule>, expr: &mut Vec<Token>, pos: usize) -> Value {
         rule::query(rules.clone(), expr[pos].get_name())
     }
