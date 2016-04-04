@@ -8,7 +8,7 @@ fn query() {
     let a = [Operators::True].to_vec();
 
     let mut res = super::super::rule::query(rules.clone(), 'A');
-    assert!(res == Value::Unknow);
+    assert!(res == Value::False);
 
     rules.push(Rule { variable: 'A', rule: a});
     res = super::super::rule::query(rules.clone(), 'A');
