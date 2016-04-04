@@ -1,5 +1,6 @@
 use token::Token;
 use token::Operators;
+use rule::Rule;
 
 use std::fs::File;
 use std::env;
@@ -111,3 +112,22 @@ pub fn file_to_expr() -> Vec<Token> {
  * there's also .extend_from_slice, .extend(), and .append(). The
  * last two can be used to move elements (no elementwise clone needed)
  */
+
+//TODO HANDLE SYNTAX ERROR
+//TODO expr to str
+fn to_rule(mut rules: Vec<Rule>, expr: Vec<Token>) {
+    let i = match expr.iter().position(|e| e.operator_type == Operators::Type::implies
+                                       || e.operator_type == Operators::Type::if_and_only_if) {
+        Some(e) => e,
+        None => panic!("Syntax error: rule has no right side"),
+    };
+    let mut left = expr.clone();
+    let right = left.split_off(i);
+    if right.len() == 1 {
+        match right[0].operator_type {
+            Operators::Type::Operand{name} => (),
+            _ => panic!("Syntax error: right side has no operand"),
+        }
+        rules.push(Rule { variable: 'A', rule: left });
+    }
+}
