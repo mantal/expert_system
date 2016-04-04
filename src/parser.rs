@@ -130,8 +130,30 @@ fn to_rule(mut rules: Vec<Rule>, expr: Vec<Token>) {
                 Operators::Type::Operand{name} => (),
                 _ => panic!("Syntax error: right side has no operand"),
             }
-            rules.push(Rule { variable: right[0].get_name(), rule: left });
+            rules.push(Rule { variable: right[0].get_name(), rule: left.clone() });
         },
-        _ => (),
+        2 => {
+            left.insert(0, Operators::Bracket_open);
+            left.push(Operators::Bracket_close);
+            left.insert(0, Operators::Negate);
+            rules.push(Rule { variable: right[0].get_name(), rule: left.clone() });
+        }
+        3 => {
+            match right[0].operator_type {
+                Operators::Type::Operand{name} => (),
+                _ => panic!("Syntax error"),
+            }
+            match right[1].priority  {//right[1] == Token::And TODO better
+                2200 => (),
+                _ => panic!("Unsupported operation or syntax error"),//TODO better
+            }
+            match right[2].operator_type {
+                Operators::Type::Operand{name} => (),
+                _ => panic!("Syntax error"),
+            }
+            rules.push(Rule { variable: right[0].get_name(), rule: left.clone() });
+            rules.push(Rule { variable: right[2].get_name(), rule: left.clone() });
+        }
+        _ => panic!("Unsupported operation"),
     }
 }
