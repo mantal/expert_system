@@ -123,11 +123,15 @@ fn to_rule(mut rules: Vec<Rule>, expr: Vec<Token>) {
     };
     let mut left = expr.clone();
     let right = left.split_off(i);
-    if right.len() == 1 {
-        match right[0].operator_type {
-            Operators::Type::Operand{name} => (),
-            _ => panic!("Syntax error: right side has no operand"),
-        }
-        rules.push(Rule { variable: 'A', rule: left });
+    match right.len() {
+        0 => panic!("Syntax error: right side has no operand"),
+        1 => {
+            match right[0].operator_type {
+                Operators::Type::Operand{name} => (),
+                _ => panic!("Syntax error: right side has no operand"),
+            }
+            rules.push(Rule { variable: right[0].get_name(), rule: left });
+        },
+        _ => (),
     }
 }
