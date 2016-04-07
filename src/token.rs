@@ -1,3 +1,4 @@
+use std::fmt;
 use rule::Rule;
 
 #[derive(Copy)]
@@ -14,6 +15,12 @@ impl Clone for Token {
             priority: self.priority,
             exec: self.exec
         }
+    }
+}
+
+impl fmt::Debug for Token {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Token {{ type: {:?}, priority: {:?} }}", self.operator_type, self.priority)
     }
 }
 
