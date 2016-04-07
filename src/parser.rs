@@ -115,14 +115,15 @@ pub fn file_to_expr() -> Vec<Token> {
 
 //TODO HANDLE SYNTAX ERROR
 //TODO expr to str
-fn to_rule(mut rules: Vec<Rule>, expr: Vec<Token>) {
+pub fn to_rule(rules:  &mut Vec<Rule>, expr: &Vec<Token>) {
     let i = match expr.iter().position(|e| e.operator_type == Operators::Type::implies
                                        || e.operator_type == Operators::Type::if_and_only_if) {
         Some(e) => e,
         None => panic!("Syntax error: rule has no right side"),
     };
     let mut left = expr.clone();
-    let right = left.split_off(i);
+    let mut right = left.split_off(i);
+    right.remove(0);
     match right.len() {
         0 => panic!("Syntax error: right side has no operand"),
         1 => {
