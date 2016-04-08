@@ -97,6 +97,7 @@ fn brackets() {
 fn and() {
     let mut expr: Vec<Token> = Vec::new();
 
+    // T & T => T
     expr.push(Operators::True);
     expr.push(Operators::And);
     expr.push(Operators::True);
@@ -104,6 +105,7 @@ fn and() {
 
     expr.clear();
 
+    // F & F => F
     expr.push(Operators::False);
     expr.push(Operators::And);
     expr.push(Operators::False);
@@ -111,6 +113,7 @@ fn and() {
 
     expr.clear();
 
+    //F & T => F
     expr.push(Operators::False);
     expr.push(Operators::And);
     expr.push(Operators::True);
@@ -118,6 +121,7 @@ fn and() {
 
     expr.clear();
 
+    //U & F => F
     expr.push(Operators::Unknow);
     expr.push(Operators::And);
     expr.push(Operators::False);
@@ -125,9 +129,96 @@ fn and() {
 
     expr.clear();
 
+    //U & T => U
     expr.push(Operators::Unknow);
     expr.push(Operators::And);
     expr.push(Operators::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::Unknow);
+}
+
+#[test]
+fn nand() {
+    let mut expr: Vec<Token> = Vec::new();
+
+    // T & T => F
+    expr.push(Operators::True);
+    expr.push(Operators::Nand);
+    expr.push(Operators::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::False);
+
+    expr.clear();
+
+    // F & F => T
+    expr.push(Operators::False);
+    expr.push(Operators::Nand);
+    expr.push(Operators::False);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::True);
+
+    expr.clear();
+
+    //F & T => T
+    expr.push(Operators::False);
+    expr.push(Operators::Nand);
+    expr.push(Operators::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::True);
+
+    expr.clear();
+
+    //U & F => T
+    expr.push(Operators::Unknow);
+    expr.push(Operators::Nand);
+    expr.push(Operators::False);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::True);
+
+    expr.clear();
+
+    //U & T => U
+    expr.push(Operators::Unknow);
+    expr.push(Operators::Nand);
+    expr.push(Operators::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::Unknow);
+}
+
+#[test]
+fn nor() {
+    let mut expr: Vec<Token> = Vec::new();
+
+    //T | T => F
+    expr.push(Operators::True);
+    expr.push(Operators::Nor);
+    expr.push(Operators::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::False);
+
+    expr.clear();
+
+    //F | F => T
+    expr.push(Operators::False);
+    expr.push(Operators::Nor);
+    expr.push(Operators::False);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::True);
+
+    expr.clear();
+
+    //F | T => F
+    expr.push(Operators::False);
+    expr.push(Operators::Nor);
+    expr.push(Operators::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::False);
+
+    expr.clear();
+
+    //U | T => F
+    expr.push(Operators::Unknow);
+    expr.push(Operators::Nor);
+    expr.push(Operators::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::False);
+
+    expr.clear();
+
+    //U | F => U
+    expr.push(Operators::Unknow);
+    expr.push(Operators::Nor);
+    expr.push(Operators::False);
     assert!(super::super::eval(&Vec::new(), &mut expr) == Value::Unknow);
 }
 
@@ -203,6 +294,49 @@ fn xor() {
 
     expr.push(Operators::Unknow);
     expr.push(Operators::Xor);
+    expr.push(Operators::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::Unknow);
+}
+
+#[test]
+fn xnor() {
+    let mut expr: Vec<Token> = Vec::new();
+
+    //T ^ T => T
+    expr.push(Operators::True);
+    expr.push(Operators::Xnor);
+    expr.push(Operators::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::True);
+
+    expr.clear();
+
+    //F ^ F => T
+    expr.push(Operators::False);
+    expr.push(Operators::Xnor);
+    expr.push(Operators::False);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::True);
+
+    expr.clear();
+
+    //F ^ T => F
+    expr.push(Operators::False);
+    expr.push(Operators::Xnor);
+    expr.push(Operators::True);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::False);
+
+    expr.clear();
+
+    //U ^ F => U
+    expr.push(Operators::Unknow);
+    expr.push(Operators::Xnor);
+    expr.push(Operators::False);
+    assert!(super::super::eval(&Vec::new(), &mut expr) == Value::Unknow);
+
+    expr.clear();
+
+    //U ^ T => U
+    expr.push(Operators::Unknow);
+    expr.push(Operators::Xnor);
     expr.push(Operators::True);
     assert!(super::super::eval(&Vec::new(), &mut expr) == Value::Unknow);
 }

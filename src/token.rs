@@ -54,8 +54,11 @@ pub mod Operators {
 
     pub static Negate: Token = Token { priority: 3000, exec: negate, operator_type: Type::Unary };
     pub static And: Token = Token { priority: 2200, exec: and, operator_type: Type::Binary };
-    pub static Xor: Token = Token { priority: 2000, exec: xor, operator_type: Type::Binary };
+    pub static Nand: Token = Token { priority: 2200, exec: nand, operator_type: Type::Binary };
     pub static Or: Token = Token { priority: 2100, exec: or, operator_type: Type::Binary };
+    pub static Nor: Token = Token { priority: 2000, exec: nor, operator_type: Type::Binary };
+    pub static Xor: Token = Token { priority: 2000, exec: xor, operator_type: Type::Binary };
+    pub static Xnor: Token = Token { priority: 2000, exec: xnor, operator_type: Type::Binary };
     pub static True: Token = Token { priority: 0, exec: _true, operator_type: Type::Operand{ name: 't' } };
     pub static False: Token = Token { priority: 0, exec: _false, operator_type: Type::Operand { name: 'f' } };
     pub static Unknow: Token = Token { priority: 0, exec: unknow, operator_type: Type::Operand { name: 'f' } };
@@ -143,6 +146,26 @@ pub mod Operators {
         res
     }
 
+    fn nand(rules: &Vec<Rule>, expr: &mut Vec<Token>, pos: usize) -> Value {
+        let a = (expr[pos - 1].exec)(rules, expr, pos - 1);
+        let b = (expr[pos + 1].exec)(rules, expr, pos + 1);
+
+        let res = if a == Value::True && b == Value::True {
+            Value::False
+        } else if a == Value::False || b == Value::False {
+            Value::True
+        } else {
+            Value::Unknow
+        };
+
+        expr.remove(pos + 1);
+        expr.remove(pos);
+        expr.remove(pos - 1);
+        expr.insert(pos - 1, value_to_token(res));
+
+        res
+    }
+
     fn or(rules: &Vec<Rule>, expr: &mut Vec<Token>, pos: usize) -> Value {
         let a = (expr[pos - 1].exec)(rules, expr, pos - 1);
         let b = (expr[pos + 1].exec)(rules, expr, pos + 1);
@@ -151,6 +174,26 @@ pub mod Operators {
             Value::True
         } else if a == Value::False && b == Value::False {
             Value::False
+        } else {
+            Value::Unknow
+        };
+
+        expr.remove(pos + 1);
+        expr.remove(pos);
+        expr.remove(pos - 1);
+        expr.insert(pos - 1, value_to_token(res));
+
+        res
+    }
+
+    fn nor(rules: &Vec<Rule>, expr: &mut Vec<Token>, pos: usize) -> Value {
+        let a = (expr[pos - 1].exec)(rules, expr, pos - 1);
+        let b = (expr[pos + 1].exec)(rules, expr, pos + 1);
+
+        let res = if a == Value::True || b == Value::True {
+            Value::False
+        } else if a == Value::False && b == Value::False {
+            Value::True
         } else {
             Value::Unknow
         };
@@ -173,6 +216,26 @@ pub mod Operators {
             Value::False
         } else {
             Value::True
+        };
+
+        expr.remove(pos + 1);
+        expr.remove(pos);
+        expr.remove(pos - 1);
+        expr.insert(pos - 1, value_to_token(res));
+
+        res
+    }
+
+    fn xnor(rules: &Vec<Rule>, expr: &mut Vec<Token>, pos: usize) -> Value {
+        let a = (expr[pos - 1].exec)(rules, expr, pos - 1);
+        let b = (expr[pos + 1].exec)(rules, expr, pos + 1);
+
+        let res = if a == Value::Unknow || b == Value::Unknow {
+            Value::Unknow
+        } else if a == Value::True && b == Value::True || a == Value::False && b == Value::False {
+            Value::True
+        } else {
+            Value::False
         };
 
         expr.remove(pos + 1);
