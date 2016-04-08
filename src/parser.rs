@@ -113,7 +113,6 @@ pub fn file_to_expr() -> Vec<Token> {
  * last two can be used to move elements (no elementwise clone needed)
  */
 
-//TODO HANDLE SYNTAX ERROR
 //TODO expr to str
 pub fn to_rule(rules:  &mut Vec<Rule>, expr: &Vec<Token>) {
     let i = match expr.iter().position(|e| e.operator_type == Operators::Type::implies

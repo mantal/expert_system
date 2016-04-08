@@ -65,8 +65,11 @@ pub mod Operators {
     pub static Bracket_open: Token = Token { priority: 4000, exec: bracket, operator_type: Type::Bracket_open };
     pub static Bracket_close: Token = Token { priority: -1, exec: _false, operator_type: Type::Bracket_close };
 
+    //TODO
     pub static implies: Token = Token { priority: -1, exec: _false, operator_type: Type::implies };
     pub static if_and_only_if: Token = Token { priority: -1, exec: _false, operator_type: Type::if_and_only_if };
+    pub static Implies: Token = Token { priority: -1, exec: _false, operator_type: Type::implies };
+    pub static Equivalent: Token = Token { priority: -1, exec: _false, operator_type: Type::if_and_only_if };
 
     #[derive(Copy, Clone, Eq, PartialEq)]
     #[derive(Debug)]

@@ -1,10 +1,10 @@
 [package]
 name = "expert_system"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["dlancar <dlancar@student.42.fr>"]
 
 [dependencies]
-
+unicode-segmentation = "0.1.2"
 
 [profile.dev]
 opt-level = 0  # Controls the --opt-level the compiler builds with

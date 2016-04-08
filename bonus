@@ -1,5 +1,5 @@
 SUPER UNIT TEST OF DOOM
-
-NAND
-NOR
-XNOR
+support utf8
+NAND => *
+NOR  => @
+XNOR => ~

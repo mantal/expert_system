@@ -1,6 +1,5 @@
 use rule::Rule;
 use token::Token;
-use token::Operators;
 
 #[test]
 fn to_rule() {
