@@ -116,6 +116,7 @@ pub fn expr_to_rule(rules:  &mut Vec<Rule>, expr: &Vec<Token>) {
     let mut left = expr.clone();
     let mut right = left.split_off(i);
     right.remove(0);
+    println!("[{:?}]", expr);
     match right.len() {
         0 => panic!("Syntax error: right side has no operand"),
         1 => {
@@ -139,22 +140,23 @@ pub fn expr_to_rule(rules:  &mut Vec<Rule>, expr: &Vec<Token>) {
             left.insert(0, Operators::Negate());
             rules.push(Rule { variable: right[1].get_name(), rule: left.clone() });
         }
-        3 => {
-            match right[0].operator_type {
-                Operators::Type::Operand{ref name} => (),
-                _ => panic!("Syntax error"),
+        n @ _ if n % 2 != 0 => {
+            let mut i = 0;
+            while i < n {
+                match right[i].operator_type {
+                    Operators::Type::Operand{ref name} => (),
+                    _ => panic!("Syntax error"),
+                }
+                if i + 1 < n {
+                    match right[i + 1].priority  {//right[1] == Token::And TODO better
+                        2200 => (),
+                        _ => panic!("Unsupported operation or syntax error"),//TODO better
+                    }
+                }
+                rules.push(Rule { variable: right[i].get_name(), rule: left.clone() });
+                i += 2;
             }
-            match right[1].priority  {//right[1] == Token::And TODO better
-                2200 => (),
-                _ => panic!("Unsupported operation or syntax error"),//TODO better
-            }
-            match right[2].operator_type {
-                Operators::Type::Operand{ref name} => (),
-                _ => panic!("Syntax error"),
-            }
-            rules.push(Rule { variable: right[0].get_name(), rule: left.clone() });
-            rules.push(Rule { variable: right[2].get_name(), rule: left.clone() });
         }
-        _ => panic!("Unsupported operation"),
+        _ => panic!("Unsupported operation or syntax error"),
     }
 }
