@@ -26,3 +26,13 @@ fn query_inconsistent() {
     rules.push(Rule { variable: "A".to_string(), rule: rule_false});
     super::super::rule::query(rules.clone(), "A".to_string());
 }
+
+#[test]
+#[should_panic(expected = "Aborting: recuring too deeply")]
+fn query_infinite_recursion() {
+    let mut rules: Vec<Rule> = Vec::new();
+    let rule_true = [Operators::new_variable("A".to_string())].to_vec();
+
+    rules.push(Rule { variable: "A".to_string(), rule: rule_true});
+    super::super::rule::query(rules.clone(), "A".to_string());
+}
