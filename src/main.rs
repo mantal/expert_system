@@ -54,8 +54,8 @@ fn main() {
             Err(e) => panic!("Could not read stdin: {}", Error::description(&e)),
             Ok(_) => (),
         }
-        
-        if line == "exit" {
+
+        if line == "exit\n" {
             break ;
         }
         parser::parse_file(line, &mut rules);
