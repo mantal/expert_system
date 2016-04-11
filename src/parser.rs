@@ -1,120 +1,112 @@
-use token::Token;
-use token::Operators;
-use rule::Rule;
+use unicode_segmentation::UnicodeSegmentation;
 
-use std::fs::File;
-use std::env;
 use std::error::Error;
-
-use std::io::BufReader;
-use std::io::BufRead;
+use std::fs::File;
+use std::io::prelude::*;
 use std::path::Path;
 
-pub fn get_file() -> File {
-	let args: Vec<_> = env::args().collect();
-	if args.len() > 1 {
-		let mut file = match File::open(&args[1]) {
-			Ok(f) => {
-				f
-			},
-			Err(e) => {
-				panic!("error message: {}", Error::description(&e))
-			},
-		};
-		return file;
-	}
-	else { panic!("No file in argument"); }
+use rule;
+use rule::Rule;
+use token::Token;
+use token::Operators;
+
+//TODO move to separate file
+trait Graphemes {
+    fn to_graphemes(&self) -> Vec<&str>;
 }
 
-pub fn line_processing(line: String) -> Vec<Token> {
-	let mut expr : Vec<Token> = Vec::new();
-	let mut i = 0;
-
-    while i < line.len() {
-		match line.as_bytes()[i] {
-			b'(' => {
-                println!("c'est un '(' au {} charactere", i);
-                expr.push(Operators::Bracket_open)
-            },
-			b')' => {
-                println!("c'est un ')' au {} charactere", i);
-                expr.push(Operators::Bracket_close)
-            },
-			b'!' => {
-                println!("c'est un '!' au {} charactere", i);
-                expr.push(Operators::Negate)
-            },
-			b'+' => {
-                println!("c'est un '+' au {} charactere", i);
-                expr.push(Operators::And)
-            },
-			b'|' => {
-                println!("c'est un '|' au {} charactere", i);
-                expr.push(Operators::Or)
-            },
-			b'^' => {
-                println!("c'est un '^' au {} charactere", i);
-                expr.push(Operators::Xor)
-            },
-            b'A' ... b'Z' => {
-                println!("c'est une variable au {} charactere", i);
-                expr.push(Operators::new_variable(line.as_bytes()[i] as char))
-            },
-            b'\r' | b'\t' | b'\n' | b' ' => {
-                println!("space au {} charactere", i);
-            },
-            b'#' => {
-                return expr;
-            },
-			b'=' => { // implique =>
-                i += 1;
-                if line.as_bytes()[i] == b'>' {
-                    println!("c'est un '=>' du {} au  {} charactere", i-1, i);
-                    expr.push(Operators::implies)
-                }
-                else {
-                    panic!("caractere N.{} indefinit vouliez vous ecrire => ?", i)
-                }
-            },
-			b'<' => { // si et seulement si <=>
-                i += 1;
-                if line.as_bytes()[i] == b'=' && line.as_bytes()[i+1] == b'>' {
-                    i += 1;
-                    println!("c'est un '<=>' du {} au  {} charactere", i-2, i);
-                    expr.push(Operators::if_and_only_if)
-                }
-                else {
-                    panic!("caractere N.{} indefinit vouliez vous ecrire <=> ?", i)
-                }
-            },
-            _ => panic!("caractere N.{} indefinit", i),
-		}
-		i += 1;
-	}
-	println!("{}", line);
-	return expr;
+impl Graphemes for str {
+    fn to_graphemes(&self) -> Vec<&str> {
+        UnicodeSegmentation::graphemes(self, true).collect::<Vec<&str>>()
+    }
 }
 
-pub fn file_to_expr() -> Vec<Token> {
-	let mut f = get_file();
-	let mut file = BufReader::new(&f);
-    let mut expr : Vec<Token> = Vec::new();
-	for line in file.lines() {
-		let l = line.unwrap();
-		expr = line_processing(l);
-	}
-    return expr;
+
+//TODO move to main
+pub fn get_file(path: String) -> String {
+    let real_path = Path::new(&path); 
+    let mut file = match File::open(&real_path) {
+        Err(e) => panic!("Could not open {}: {}", real_path.display(), Error::description(&e)),
+        Ok(file) => file,
+    };
+
+    let mut s = String::new();
+    match file.read_to_string(&mut s) {
+        Err(e) => panic!("Could not read {}: {}", real_path.display(), Error::description(&e)),
+        Ok(_) => s,
+    }
 }
 
-/*
- * ah but there is, .concat() on a vec of vecs or a slice of vecs
- * .append(), which drains the other vector.
- * there's also .extend_from_slice, .extend(), and .append(). The
- * last two can be used to move elements (no elementwise clone needed)
- */
+pub fn facts(mut line: String, rules: &mut Vec<Rule>) {
+    line.remove(0);
+    if line.to_graphemes().iter().filter(|&e| !e.contains(char::is_alphabetic)).count() > 0 {
+        panic!("Syntax error: facts declaration can only contain variable");
+    }
+    for c in line.to_graphemes().iter() {
+        rules.push(Rule { variable: c.to_string(), rule: [Operators::True()].to_vec() });
+    }
+}
 
-//TODO expr to str
-pub fn to_rule(rules:  &mut Vec<Rule>, expr: &Vec<Token>) {
+pub fn rule(line: String, rules: &mut Vec<Rule>) {
+    expr_to_rule(rules, &line.to_graphemes().iter()
+                 .filter(|&s| !s.contains(char::is_whitespace))
+                 .map(|&s| match s {
+        "!" | "¬" => Operators::Negate(),
+        "+" | "·" => Operators::And(),
+        "*" | "⊼" => Operators::Nand(),
+        "|" | "∥" => Operators::Or(),
+        "@" | "⊽" => Operators::Nor(),
+        "^" | "⊕" => Operators::Xor(),
+        "~" => Operators::Xnor(),
+        "(" => Operators::Bracket_open(),
+        ")" => Operators::Bracket_close(),
+        "⇒" => Operators::Implies(),
+        "⇔" => Operators::Equivalent(),
+        _ => Operators::new_variable(s.to_string()),
+    }).collect::<Vec<_>>());
+}
+
+pub fn query(mut line: String, rules: &Vec<Rule>) {
+    line.remove(0);
+   
+    if line.to_graphemes().iter().filter(|&e| !e.contains(char::is_alphabetic)).count() > 0 {
+        panic!("Syntax error: querys can only contain variable");
+    }
+  
+    for c in line.to_graphemes().iter() {
+        println!("{}: {:?}", c, rule::query(rules.clone(), c.to_string()));
+    }
+}
+
+fn charset(s: &str) -> bool{
+    s.contains(char::is_alphabetic) || "!+*|@^~()=?⊤⊥⇒⇔¬·⊕⊼∥⊽".contains(s) || s.contains(char::is_whitespace)
+}
+
+pub fn parse_file(file: String, rules: &mut Vec<Rule>) {
+    for line in file.lines() {
+        let expr = line.replace("=>", "⇒")
+                        .replace("<=>", "⇔").chars()
+                        .take_while(|&e| e != '#')
+                        .collect::<String>();
+
+        if expr.to_graphemes().iter().filter(|e| !charset(e)).count() > 0 {
+            panic!("Syntax error: unknow token");
+        }
+        if expr.is_empty() {
+            continue ;
+        }
+        
+        //TODO COMMMENTMAY CRASH
+        match expr.to_graphemes().iter().next().unwrap().as_ref() {
+            "#" => continue,
+            "=" => facts(expr, rules),
+            "?" => query(expr, rules),
+            _   => rule(expr, rules),
+        }
+    }
+}
+
+pub fn expr_to_rule(rules:  &mut Vec<Rule>, expr: &Vec<Token>) {
     let i = match expr.iter().position(|e| e.operator_type == Operators::Type::implies
                                        || e.operator_type == Operators::Type::if_and_only_if) {
         Some(e) => e,
@@ -127,20 +119,20 @@ pub fn to_rule(rules:  &mut Vec<Rule>, expr: &Vec<Token>) {
         0 => panic!("Syntax error: right side has no operand"),
         1 => {
             match right[0].operator_type {
-                Operators::Type::Operand{name} => (),
+                Operators::Type::Operand{ref name} => (),
                 _ => panic!("Syntax error: right side has no operand"),
             }
             rules.push(Rule { variable: right[0].get_name(), rule: left.clone() });
         },
         2 => {
-            left.insert(0, Operators::Bracket_open);
-            left.push(Operators::Bracket_close);
-            left.insert(0, Operators::Negate);
+            left.insert(0, Operators::Bracket_open());
+            left.push(Operators::Bracket_close());
+            left.insert(0, Operators::Negate());
             rules.push(Rule { variable: right[0].get_name(), rule: left.clone() });
         }
         3 => {
             match right[0].operator_type {
-                Operators::Type::Operand{name} => (),
+                Operators::Type::Operand{ref name} => (),
                 _ => panic!("Syntax error"),
             }
             match right[1].priority  {//right[1] == Token::And TODO better
@@ -148,7 +140,7 @@ pub fn to_rule(rules:  &mut Vec<Rule>, expr: &Vec<Token>) {
                 _ => panic!("Unsupported operation or syntax error"),//TODO better
             }
             match right[2].operator_type {
-                Operators::Type::Operand{name} => (),
+                Operators::Type::Operand{ref name} => (),
                 _ => panic!("Syntax error"),
             }
             rules.push(Rule { variable: right[0].get_name(), rule: left.clone() });

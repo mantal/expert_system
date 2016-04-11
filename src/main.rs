@@ -1,7 +1,9 @@
+extern crate unicode_segmentation;
+
 mod tests;
 mod token;
 mod rule;
-mod p2;
+mod parser;
 
 use std::env;
 
@@ -38,8 +40,8 @@ fn main() {
     if std::env::args().count() != 2 {
         panic!("Usage: expert_system file");
     }
-    p2::parse_file(p2::get_file(env::args().nth(1).unwrap()), &mut rules);
+    parser::parse_file(parser::get_file(env::args().nth(1).unwrap()), &mut rules);
 }
-
+//TODO get_file in main
 //TODO TODO TODO rewrite logical op functions so that they dont eval variable unless needed
 

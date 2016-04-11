@@ -1,13 +1,13 @@
 use token::Token;
 use token::Operators::Value;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Rule {
-    pub variable: char,
+    pub variable: String,
     pub rule: Vec<Token>
 }
 
-pub fn query(rules: Vec<Rule>, var: char) -> Value {
+pub fn query(rules: Vec<Rule>, var: String) -> Value {
     let arr = rules.iter().filter(|&e| e.variable == var)
                             .map(|ref e| super::eval(&rules, &mut e.rule.clone()))
                             .collect::<Vec<_>>();
