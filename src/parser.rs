@@ -91,7 +91,6 @@ pub fn parse_file(file: String, rules: &mut Vec<Rule>) {
         if expr.contains("⇔") {//TEMP
             panic!("Unsupported operation: equivalent");
         }
-        println!("[{}]", expr);
         if expr.to_graphemes().iter().filter(|e| !charset(e)).count() > 0 {
             panic!("Syntax error: unknow token");
         }
