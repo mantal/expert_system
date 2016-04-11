@@ -83,9 +83,6 @@ fn rule() {
 }
 
 #[test]
-fn TESTERRECURSION() { assert!(false); }
-
-#[test]
 fn to_rule() {
     let mut rules: Vec<Rule> = Vec::new();
     let mut expr: Vec<Token> = Vec::new();
@@ -108,9 +105,9 @@ fn to_rule() {
     expr.push(token::Operators::new_variable("C".to_string()));
     parser::expr_to_rule(&mut rules, &expr);
    
-    println!("{:?}", rules[0].rule);
     assert!(rules.len() == 2);//TODO better
-    assert!(rules[0].rule.len() == 3);
+    assert!(rules[0].rule.len() == 1);
+    assert!(rules[1].rule.len() == 1);
 }
 
 #[test]
