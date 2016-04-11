@@ -127,10 +127,18 @@ pub fn expr_to_rule(rules:  &mut Vec<Rule>, expr: &Vec<Token>) {
             rules.push(Rule { variable: right[0].get_name(), rule: left.clone() });
         },
         2 => {
+            match right[0].operator_type {//TODO better syntax check
+                Operators::Type::Unary => (),
+                _ => panic!("Syntax error"),
+            }
+            match right[1].operator_type {
+                Operators::Type::Operand{ref name} => (),
+                _ => panic!("Syntax error"),
+            }
             left.insert(0, Operators::Bracket_open());
             left.push(Operators::Bracket_close());
             left.insert(0, Operators::Negate());
-            rules.push(Rule { variable: right[0].get_name(), rule: left.clone() });
+            rules.push(Rule { variable: right[1].get_name(), rule: left.clone() });
         }
         3 => {
             match right[0].operator_type {
