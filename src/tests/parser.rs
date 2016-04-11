@@ -77,9 +77,7 @@ fn rule() {
     expr_ref.push(token::Operators::new_variable("π".to_string()));
     expr_ref.push(token::Operators::And());
     expr_ref.push(token::Operators::new_variable("π".to_string()));
-    parser::rule("π + π ⇒ A".to_string(), &mut rules);
-
-    
+    parser::rule("π+π⇒A".to_string(), &mut rules);
 }
 
 #[test]
