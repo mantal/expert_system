@@ -82,12 +82,16 @@ fn charset(s: &str) -> bool{
 
 pub fn parse_file(file: String, rules: &mut Vec<Rule>) {
     for line in file.lines() {
-        let expr = line.replace("=>", "⇒")
-                        .replace("<=>", "⇔")
+        let expr = line.replace("<=>", "⇔")
+                        .replace("=>", "⇒")
                         .replace(char::is_whitespace, "").chars()
                         .take_while(|&e| e != '#')
                         .collect::<String>();
 
+        if expr.contains("⇔") {//TEMP
+            panic!("Unsupported operation: equivalent");
+        }
+        println!("[{}]", expr);
         if expr.to_graphemes().iter().filter(|e| !charset(e)).count() > 0 {
             panic!("Syntax error: unknow token");
         }
