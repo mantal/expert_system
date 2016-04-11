@@ -48,9 +48,7 @@ pub fn facts(mut line: String, rules: &mut Vec<Rule>) {
 }
 
 pub fn rule(line: String, rules: &mut Vec<Rule>) {
-    expr_to_rule(rules, &line.to_graphemes().iter()
-                 .filter(|&s| !s.contains(char::is_whitespace))
-                 .map(|&s| match s {
+    expr_to_rule(rules, &line.to_graphemes().iter().map(|&s| match s {
         "!" | "¬" => Operators::Negate(),
         "+" | "·" => Operators::And(),
         "*" | "⊼" => Operators::Nand(),
@@ -68,7 +66,7 @@ pub fn rule(line: String, rules: &mut Vec<Rule>) {
 
 pub fn query(mut line: String, rules: &Vec<Rule>) {
     line.remove(0);
-   
+  
     if line.to_graphemes().iter().filter(|&e| !e.contains(char::is_alphabetic)).count() > 0 {
         panic!("Syntax error: querys can only contain variable");
     }
@@ -85,7 +83,8 @@ fn charset(s: &str) -> bool{
 pub fn parse_file(file: String, rules: &mut Vec<Rule>) {
     for line in file.lines() {
         let expr = line.replace("=>", "⇒")
-                        .replace("<=>", "⇔").chars()
+                        .replace("<=>", "⇔")
+                        .replace(char::is_whitespace, "").chars()
                         .take_while(|&e| e != '#')
                         .collect::<String>();
 
@@ -95,9 +94,8 @@ pub fn parse_file(file: String, rules: &mut Vec<Rule>) {
         if expr.is_empty() {
             continue ;
         }
-        
-        //TODO COMMMENTMAY CRASH
-        match expr.to_graphemes().iter().next().unwrap().as_ref() {
+       
+        match expr.to_graphemes().iter().next().unwrap().as_ref() {//TODO [0]
             "#" => continue,
             "=" => facts(expr, rules),
             "?" => query(expr, rules),
