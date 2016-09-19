@@ -1,7 +1,8 @@
 [package]
 name = "expert_system"
 version = "1.0.0"
-authors = ["dlancar <dlancar@student.42.fr>"]
+authors = ["dlancar <dlancar@student.42.fr>",
+           "mde-jesu <mde-jesu@student.42.fr>"]
 
 [dependencies]
 unicode-segmentation = "0.1.2"
